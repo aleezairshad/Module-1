@@ -1,5 +1,5 @@
 // Name: Hany, Aleeza, and Thanh
-// Description: Modul1 - The Phases of Software Development 
+// Description: Module 1 - The Phases of Software Development 
 
 #include <iostream>
 #include <string>
