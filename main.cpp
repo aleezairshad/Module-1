@@ -12,6 +12,8 @@ using namespace std;
 // Function Prototypes
 char menuOption();
 char menuOption1();
+char menuOption2();
+char menuOption3();
 
 
 int main()
@@ -104,10 +106,42 @@ int main()
             
             break;
         case '2':
-            // todo: implement dataset configuration
+            {
+                char insertChoice = menuOption2();
+                switch (insertChoice)
+                {
+				case 'A':
+                    break;
+				case 'B':
+                    break;
+				case 'C':
+                    break;
+				case 'R':
+                    cout << "\n\n";
+					system("pause");
+                    break;
+                }
+		}
+            
             break;
         case '3':
-            // todo: implement dataset configuration
+            {
+                char deleteChoice = menuOption3();
+                switch (deleteChoice)
+				{
+                    case 'A':
+						break;
+					case 'B':
+                        break;
+					case 'C':
+                        break;
+					case 'R':
+						cout << "\n\n";
+                        system("pause");
+                        break;
+                }
+		}
+            
 
             break;
         case 'A':
@@ -233,3 +267,33 @@ char menuOption1()
 
     return inputChar("\n\tOption: ", string("ABR"));
 }
+
+char menuOption2()
+{
+    system("cls"); // Clear the console screen (Windows-specific)
+    cout << "\tInsert (sort) Dataset Menu\n";
+    cout << "\t" << string(80, char(205));
+    cout << "\n\t\t A. insert a value\n";
+    cout << "\t\t B. insert a specified number of random values\n";
+	cout << "\t\t C. read data from file and insert values\n";
+    cout << "\t" << string(80, char(196));
+    cout << "\n\t\t R. return\n";
+    cout << "\t" << string(80, char(205)) << "\n";
+    return inputChar("\n\tOption: ", string("ABR"));
+}
+
+
+char menuOption3()
+{
+    system("cls"); // Clear the console screen (Windows-specific)
+    cout << "\tDelete Dataset Menu\n";
+    cout << "\t" << string(80, char(205));
+    cout << "\n\t\t A. delete a value\n";
+    cout << "\t\t B. delete a range of values\n";
+    cout << "\t\t C. delete all values\n";
+    cout << "\t" << string(80, char(196));
+    cout << "\n\t\t R. return\n";
+    cout << "\t" << string(80, char(205)) << "\n";
+    return inputChar("\n\tOption: ", string("ABCR"));
+}
+
