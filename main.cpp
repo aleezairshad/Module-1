@@ -1,4 +1,4 @@
-// Name: Hany, Aleeza, and Tuniphn
+// Name: Hany, Aleeza, and Thanh
 // Description: Modul1 - The Phases of Software Development 
 
 #include <iostream>
