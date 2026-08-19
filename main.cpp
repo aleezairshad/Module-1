@@ -6,6 +6,7 @@
 #include <cctype>
 #include <iomanip>
 #include "input.h"
+#include "Container.h"
 
 using namespace std;
 
@@ -16,12 +17,12 @@ char menuOption2();
 char menuOption3();
 
 
+
+
 int main()
 {
-	double* dataset = nullptr; // Pointer to the dataset (dynamic array)
-	int datasetSize = 0; // Size of the dataset
 
-	bool isSample = true; // Flag to indicate if the dataset is a sample or population
+	Container dataset; // Create an instance of the Container class
 
     cout << "\tWhat are Descriptive Statistics?" << "\n\n";
     cout << "\tDescriptive statistics summarize certain aspects of a data set (Sample or Population)" << "\n";
@@ -35,48 +36,43 @@ int main()
     {
 		system("cls"); // Clear the console screen (Windows-specific)
 
-		cout << "\n\tAddress of Dynamic array: " << static_cast<void*>(dataset) << "\n";
+		cout << "\n\tAddress of Dynamic array: " << static_cast<void*>(dataset.getData()) << "\n";
 
-        cout << "\tDataset: (" << (isSample ? "Sample" : "Population") << ")\n\n";
+        cout << "\tDataset: (" << (dataset.getIsSample() ? "Sample" : "Population") << ")\n\n";
 
-        if (datasetSize < 2)
+        if (dataset.getSize() < 2)
         {
             cout << "\tERROR: Data Set requires at least 2 values.\n\n";
         }
         else
-            {
-            cout << "\tDataset Size: " << datasetSize << "\n";
-            cout << "\tDataset Values: ";
-            for (int i = 0; i < datasetSize; ++i)
-            {
-                cout << dataset[i] << " ";
-            }
-            cout << "\n\n";
+        {
+			dataset.display(); // Display the dataset values
+			cout << "\n";
+
 		}
     
 
         char choice = menuOption();
 
-		if (choice >= 'A' && choice <= 'Z') // Check if the choice is a letter
-		{
-            if (datasetSize == 0)
+        if (choice >= 'A' && choice <= 'Z')
+        {
+            if (dataset.getSize() == 0)
             {
                 cout << "\n\tException Error: Dataset is empty.\n\n";
                 system("pause");
-                continue; // Skip the rest of the loop and go back to the menu
+                continue;
             }
-            else if (datasetSize < 2)
+            else if (dataset.getSize() < 2)
             {
                 cout << "\n\tException Error: Require at least 2 data values.\n\n";
                 system("pause");
-                continue; // Skip the rest of the loop and go back to the menu
-			}
-		}
+                continue;
+            }
+        }
 
         switch (choice)
         {
         case '0':
-			//return EXIT_SUCCESS; // Exit the program
 			running = false; // Set running to false to exit the loop
 
             break;
@@ -86,12 +82,12 @@ int main()
             switch (configChoice)
             {
             case 'A':
-                isSample = true;
+                dataset.setIsSample(true);
                 cout << "\n\tDataset configured as Sample.\n\n";
                 system("pause");
                 break;
             case 'B':
-                isSample = false;
+                dataset.setIsSample(false);
                 cout << "\n\tDataset configured as Population.\n\n";
                 system("pause");
                 break;
@@ -110,12 +106,33 @@ int main()
                 char insertChoice = menuOption2();
                 switch (insertChoice)
                 {
-				case 'A':
+                case 'A':
+                {
+					double value = inputDouble("\n\tSpecify an integer value to be inserted to the Dataset: ");
+					dataset.insertValue(value);
+					cout << "\n\t" << value << " has been inserted...\n\n";
+                    system("pause");
                     break;
-				case 'B':
+                }
+                case 'B':
+                {
+					int count = inputInteger("\n\tSpecify a number of values to be randomly generated into the Dataset: ", true);
+					dataset.insertRandomValues(count);
+					cout << "\n\tCONFIRMATION: Inserted " << count << " random values into the Dataset.\n\n";
+					system("pause");
                     break;
-				case 'C':
+                }
+                case 'C':
+
+                {
+					string filename = inputString("\n\tSpecify a data text file name to read: ", false);
+
+					dataset.readFromFile(filename);
+					cout << "\n\n";
+					system("pause");
+
                     break;
+                }
 				case 'R':
                     cout << "\n\n";
 					system("pause");
@@ -207,11 +224,10 @@ int main()
         }
     }
 
-	delete[] dataset; // Free the dynamically allocated memory for the dataset
-    
 
     return EXIT_SUCCESS;
-}
+}  
+
 
 //Precondition: None
 //Postcondition: Returns a char value representing the user's menu option selection
@@ -279,7 +295,7 @@ char menuOption2()
     cout << "\t" << string(80, char(196));
     cout << "\n\t\t R. return\n";
     cout << "\t" << string(80, char(205)) << "\n";
-    return inputChar("\n\tOption: ", string("ABR"));
+    return inputChar("\n\tOption: ", string("ABCR"));
 }
 
 
@@ -296,4 +312,6 @@ char menuOption3()
     cout << "\t" << string(80, char(205)) << "\n";
     return inputChar("\n\tOption: ", string("ABCR"));
 }
+
+
 
