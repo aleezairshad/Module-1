@@ -91,10 +91,11 @@ void Container::insertValue(double value)
 // The size of the dataset increases by 'count'.
 void Container::insertRandomValues(int count)
 {
+	const int MAX_RAND = 101; // Maximum random value (exclusive)
     for (int i = 0; i < count; ++i)
     {
 		// Generate a random value between 0 and 100
-		int randomInt = rand() % 101; // Random integer between 0 and 100
+		int randomInt = rand() % MAX_RAND; // Random integer between 0 and 100
 		double randomValue = static_cast<double>(randomInt);
         insertValue(randomValue);
     }
@@ -237,11 +238,12 @@ void Container::deleteAll()
 // 15 values per row.
 void Container::display() const
 {
+	const int MAX_VAL = 15; // Maximum number of values per row
 
     for (int i = 0; i < size; ++i)
     {
         // Indent the beginning of each row
-        if (i % 15 == 0)
+        if (i % MAX_VAL == 0)
         {
             cout << "\t";
         }
@@ -250,14 +252,14 @@ void Container::display() const
         cout << setw(3) << static_cast<int>(data[i]) << " ";
 
         // New line after every 15 values
-        if ((i + 1) % 15 == 0)
+        if ((i + 1) % MAX_VAL == 0)
         {
             cout << "\n";
         }
     }
 
     // New line if the final row has fewer than 15 values
-    if (size % 15 != 0)
+    if (size % MAX_VAL != 0)
     {
         cout << "\n";
     }
@@ -320,22 +322,24 @@ double Container::calculateMean() const
 // Postcondition: Returns the median of the dataset.
 double Container::calculateMedian() const
 {
+	const int TWO = 2; // Define a constant for the value 2
+	const double TWO_FRAC = 2.0; // Define a constant for the value 2.0
     if (size == 0)
     {
         cout << "\n\tException Error: Dataset is empty.\n";
         return 0.0; // Return 0 or handle the error as appropriate
     }
 
-    if (size % 2 == 0)
+    if (size % TWO == 0)
     {
         // If the size is even, return the average of the two middle values
-        int midIndex = size / 2;
-        return (data[midIndex - 1] + data[midIndex]) / 2.0;
+        int midIndex = size / TWO;
+        return (data[midIndex - 1] + data[midIndex]) / TWO_FRAC;
     }
     else
     {
         // If the size is odd, return the middle value
-        int midIndex = size / 2;
+        int midIndex = size / TWO;
         return data[midIndex];
     }
 }
@@ -528,6 +532,19 @@ double Container::calculateKurtosisExcess() const
     }
 	return kurtosisExcess;
 
-    
+}
 
+// Precondition: The dataset is not empty.
+// Postcondition: Returns the coefficient of variation of the dataset. If the mean is zero, returns NAN to avoid division by zero.
+// The coefficient of variation is calculated as the standard deviation divided by the mean.
+double Container::calculateCoefficientOfVariation() const
+{
+    double mean = calculateMean();
+    double stdDev = calculateStandardDeviation();
+    //validate that mean is not zero to avoid division by zero
+    if (mean == 0.0)
+    {
+        return NAN; // Return NaN (Not a Number) if mean is zero
+    }
+    return stdDev / mean;
 }

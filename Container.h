@@ -51,6 +51,10 @@ public:
 
 	double calculateKurtosisExcess() const; //function for calculating the kurtosis excess of the dataset
 
+	double calculateCoefficientOfVariation() const; //function for calculating the coefficient of variation of the dataset
+
+
+
 
 };
 

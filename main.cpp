@@ -354,8 +354,21 @@ int main()
 			system("pause");
             break;
         }
-		case 'V':
-			break;
+        case 'V':
+        {
+			double coeffVariation = dataset.calculateCoefficientOfVariation(); // Calculate the coefficient of variation of the dataset
+			cout << "\n\tCoefficient of Variation " << setw(7) << "= ";
+            if (isnan(coeffVariation))
+            {
+                cout << "unknown\n\n";
+            }
+			else
+			{
+				cout << fixed << setprecision(7) << coeffVariation << "\n\n";
+			}
+			system("pause");
+            break;
+        }
 		case 'W':
 			break;
 		case 'X':
