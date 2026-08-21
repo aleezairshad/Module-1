@@ -2,6 +2,7 @@
 #include <cstdlib> 
 #include <iomanip> 
 #include <fstream>
+#include <cmath>
 
 
 #include <algorithm> // For std::sort
@@ -409,4 +410,124 @@ double Container::calculateStandardDeviation() const
         variance = sumSquaredDifferences / size; // Population standard deviation
     }
     return sqrt(variance);
+}
+
+
+// Precondition: The dataset is not empty.
+// Postcondition: returns the skewness of the dataset. If the dataset is a sample, uses n(n-1)(n-2) in the denominator; if it's a population, uses n.
+double Container::calculateSkewness() const
+{
+    //validate that size is greater than 2 for sample skewness calculation
+    if (isSample && size < 3)
+    {
+        return NAN; // Return NaN (Not a Number) if sample size is less than 3
+    }
+    double mean = calculateMean();
+    double stdDev = calculateStandardDeviation();
+    double sumCubedDifferences = 0.0;
+
+	//validate that stdDev is not zero to avoid division by zero
+    if (stdDev == 0.0)
+    {
+		return NAN; // Return NaN (Not a Number) if standard deviation is zero
+    }
+
+
+
+    for (int i = 0; i < size; ++i)
+    {
+        double difference = data[i] - mean;
+        sumCubedDifferences += difference * difference * difference;
+    }
+    double skewness;
+    if (isSample)
+    {
+        //skewness = (size * (size - 1) * (size - 2)) * sumCubedDifferences / ((size - 1) * (size - 1) * (size - 1) * stdDev * stdDev * stdDev);
+		skewness = (static_cast<double>(size) / ((size - 1) * (size - 2))) * (sumCubedDifferences / pow(stdDev, 3));
+    }
+    else
+    {
+       // skewness = sumCubedDifferences / (size * stdDev * stdDev * stdDev);
+		skewness = (sumCubedDifferences / (size * pow(stdDev, 3)));
+    }
+    return skewness;
+}
+
+// Precondition: The dataset is not empty.
+// Postcondition: Returns the kurtosis of the dataset. For a sample, uses the adjusted sample kurtosis formula.
+// For a population, uses the population kurtosis formula. Returns NAN if the sample contains fewer than 4 values or if the standard deviation is zero.
+double Container::calculateKurtosis() const
+{
+    //validate that size is greater than 3 for sample kurtosis calculation
+    if (isSample && size < 4)
+    {
+        return NAN; // Return NaN (Not a Number) if sample size is less than 4
+    }
+    double mean = calculateMean();
+    double stdDev = calculateStandardDeviation();
+    double sumFourthDifferences = 0.0;
+    //validate that stdDev is not zero to avoid division by zero
+    if (stdDev == 0.0)
+    {
+        return NAN; // Return NaN (Not a Number) if standard deviation is zero
+    }
+
+    for (int i = 0; i < size; ++i)
+    {
+        double difference = data[i] - mean;
+        //sumFourthDifferences += difference * difference * difference * difference;
+		sumFourthDifferences += pow(difference, 4);
+    }
+    double kurtosis;
+    if (isSample)
+    {
+   
+		kurtosis = ((static_cast<double>(size) * (size + 1) / ((size - 1) * (size - 2) * (size - 3))) * (sumFourthDifferences / pow(stdDev, 4)));
+    }
+    else
+    {
+        kurtosis = sumFourthDifferences / (size * pow(stdDev, 4));
+    }
+    return kurtosis;
+}
+
+// Precondition: The dataset is not empty.
+// Precondition: The dataset contains enough values. Postcondition: Returns the kurtosis excess of the dataset. Returns NAN if the sample size is less than 4
+// or if the standard deviation is zero.
+double Container::calculateKurtosisExcess() const
+{
+	//validate sample size for kurtosis excess calculation
+    if (isSample && size < 4)
+    {
+        return NAN; // Return NaN (Not a Number) if sample size is less than 4
+    }
+
+	double mean = calculateMean();
+    double stdDev = calculateStandardDeviation();
+	double sumFourthDifferences = 0.0;
+
+	//validate that stdDev is not zero to avoid division by zero
+    if (stdDev == 0.0)
+    {
+        return NAN; // Return NaN (Not a Number) if standard deviation is zero
+    }
+    for (int i = 0; i < size; ++i)
+    {
+        double difference = data[i] - mean;
+        sumFourthDifferences += pow(difference, 4);
+	}
+    double kurtosisExcess;
+    if (isSample)
+    {
+        kurtosisExcess = (static_cast<double>(size) * (size + 1) / ((size - 1) * (size - 2) * (size - 3))) * (sumFourthDifferences / pow(stdDev, 4)) - 
+            (3.0 * (size - 1) * (size - 1) / ((size - 2) * (size - 3)));
+    }
+    else
+    {
+        kurtosisExcess = (sumFourthDifferences / (size * pow(stdDev, 4))) - 3.0;
+    }
+	return kurtosisExcess;
+
+    
+
 }

@@ -308,12 +308,52 @@ int main()
 			break;
 		case 'R':
 			break;
-		case 'S':
-			break;
-		case 'T':
-			break;
-		case 'U':
-			break;
+        case 'S':
+        {
+			double skewnessValue = dataset.calculateSkewness(); // Calculate the skewness of the dataset
+			cout << "\n\tSkewness " << setw(21) << "= ";
+            if (isnan(skewnessValue))
+            {
+                cout << "unknown\n\n";
+            }
+            else
+            {
+                cout << fixed << setprecision(7) << skewnessValue << "\n\n";
+			}
+
+			system("pause");
+            break;
+        }
+        case 'T':
+        {
+			double kurtosisValue = dataset.calculateKurtosis(); // Calculate the kurtosis of the dataset
+			cout << "\n\tKurtosis " << setw(22) << "= ";
+            if (isnan(kurtosisValue))
+            {
+                cout << "unknown\n\n";
+            }
+            else
+            {
+				cout << fixed << setprecision(7) << kurtosisValue << "\n\n";
+			}
+			system("pause");
+            break;
+        }
+        case 'U':
+        {
+			double kurtosisExcessValue = dataset.calculateKurtosisExcess(); // Calculate the kurtosis excess of the dataset
+			cout << "\n\tKurtosis Excess " << setw(15) << "= ";
+            if (isnan(kurtosisExcessValue))
+            {
+                cout << "unknown\n\n";
+            }
+            else
+			{
+				cout << fixed << setprecision(7) << kurtosisExcessValue << "\n\n";
+			}
+			system("pause");
+            break;
+        }
 		case 'V':
 			break;
 		case 'W':

@@ -43,16 +43,15 @@ public:
 	//function for calculating the mode of the dataset
 	string calculateMode() const;
 
-	/*Standard Deviation
+	double calculateStandardDeviation() const; //function for calculating the standard deviation of the dataset
 
-Standard deviation is a measure of dispersion of data values from the mean. The formula for standard deviation is the square root of the sum of squared differences from the mean divided by the size of the data set.
+	double calculateSkewness() const; //function for calculating the skewness of the dataset
 
-For a Population
-?=?ni=1(xi??)2n?????????????
+	double calculateKurtosis() const; //function for calculating the kurtosis of the dataset
 
-For a Sample
-*/
-	double calculateStandardDeviation() const;
+	double calculateKurtosisExcess() const; //function for calculating the kurtosis excess of the dataset
+
+
 };
 
 
