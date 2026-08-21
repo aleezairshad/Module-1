@@ -20,21 +20,30 @@ Container::~Container()
 	data = nullptr;
 }
 
+// Precondition: None
+// Postcondition: Returns the size of the dataset
 int Container::getSize() const
 {
 	return size;
 }
 
+
+// Precondition: None
+// Postcondition: Returns true if the dataset is a sample, false if it is a population
 bool Container::getIsSample() const
 {
 	return isSample;
 }
 
+// Precondition: getIsSample() must be called before this function to determine the current state of the dataset
+// Postcondition: Sets the dataset to be a sample or a population based on the input parameter
 void Container::setIsSample(bool sample)
 {
 	isSample = sample;
 }
 
+// Precondition: None
+// Postcondition: Returns a pointer to the dynamic array containing the dataset
 double* Container::getData() const
 {
 	return data;
@@ -73,70 +82,96 @@ void Container::insertValue(double value)
     sortData();
 }
 
+// Precondition: count is a positive integer
+// Postcondition: 'count' random values are inserted into the dataset, and the dataset remains sorted in ascending order
+// Postcondition:
+// 'count' random values are inserted into the dataset.
+// The dataset remains sorted in ascending order.
+// The size of the dataset increases by 'count'.
 void Container::insertRandomValues(int count)
 {
-    // Precondition:
-    // The dataset is sorted in ascending order.
-    //
-    // Postcondition:
-    // 'count' random values are inserted into the dataset.
-    // The dataset remains sorted in ascending order.
-    // The size of the dataset increases by 'count'.
     for (int i = 0; i < count; ++i)
     {
 		// Generate a random value between 0 and 100
 		int randomInt = rand() % 101; // Random integer between 0 and 100
 		double randomValue = static_cast<double>(randomInt);
-       // double randomValue = static_cast<double>(rand()) / RAND_MAX * 100.0; // Random value between 0 and 100
         insertValue(randomValue);
     }
-
-
 }
 
 
-void Container::deleteValue(double value)
+// Precondition: value is a double, deleteAll is a boolean
+// Postcondition: If deleteAll is true, all occurrences of value are removed from the dataset.
+bool Container::deleteValue(double value, bool deleteAll)
 {
-    // Precondition:
-    // The dataset is sorted in ascending order.
-    //
-    // Postcondition:
-    // All occurrences of 'value' are removed from the dataset.
-    // The dataset remains sorted in ascending order.
-    // The size of the dataset decreases accordingly.
-    int newSize = 0;
+    int deleteCount = 0;
+	// Count how many occurrences of the value to delete exist in the dataset
     for (int i = 0; i < size; ++i)
     {
-        if (data[i] != value)
+        if (data[i] == value)
         {
-            ++newSize;
+            ++deleteCount;
+            if (!deleteAll)
+            {
+                break;
+            }
         }
     }
-    double* newData = new double[newSize];
+	// If no occurrences of the value were found, return false
+    if (deleteCount == 0)
+    {
+        return false;
+    }
+
+    int newSize = size - deleteCount;
+	// If the new size is zero, delete the data array and set it to nullptr
+    if (newSize == 0)
+    {
+        delete[] data;
+        data = nullptr;
+        size = 0;
+        return true;
+    }
+
+	double* newData = new double[newSize]; // Create a new array to hold the remaining values
+
     int index = 0;
+    int deleted = 0;
+	// Copy over the values that are not equal to the value to delete
     for (int i = 0; i < size; ++i)
     {
-        if (data[i] != value)
+        if (data[i] == value)
+        {
+            if (deleteAll)
+            {
+                ++deleted;
+                continue;
+            }
+            if (deleted == 0)
+            {
+                ++deleted;
+                continue;
+            }
+        }
+        if (index < newSize)
         {
             newData[index++] = data[i];
         }
     }
+
     delete[] data;
     data = newData;
     size = newSize;
-    sortData();
+
+    return true;
 }
 
-void Container::deleteRange(double start, double end)
+// Precondition: start and end are doubles, with start <= end
+// Postcondition: All values in the dataset that are within the range [start, end] are removed from the dataset.
+bool Container::deleteRange(double start, double end)
 {
-    // Precondition:
-    // The dataset is sorted in ascending order.
-    //
-    // Postcondition:
-    // All values in the range [start, end] are removed from the dataset.
-    // The dataset remains sorted in ascending order.
-    // The size of the dataset decreases accordingly.
     int newSize = 0;
+	// Count how many values are outside the specified range
     for (int i = 0; i < size; ++i)
     {
         if (data[i] < start || data[i] > end)
@@ -144,124 +179,234 @@ void Container::deleteRange(double start, double end)
             ++newSize;
         }
     }
-    double* newData = new double[newSize];
+	// If the new size is the same as the current size, no values were deleted
+    if (newSize == size)
+    {
+        return false;
+    }
+	// If the new size is zero, delete the data array and set it to nullptr
+    if (newSize == 0)
+    {
+        delete[] data;
+        data = nullptr;
+        size = 0;
+        return true;
+    }
+
+	double* newData = new double[newSize]; // Create a new array to hold the remaining values
+
     int index = 0;
+	// Copy over the values that are outside the specified range
     for (int i = 0; i < size; ++i)
     {
         if (data[i] < start || data[i] > end)
         {
-            newData[index++] = data[i];
+            if (index < newSize)
+            {
+                newData[index++] = data[i];
+            }
         }
     }
+
     delete[] data;
     data = newData;
     size = newSize;
-    sortData();
+
+    return true;
 }
 
+// Precondition:
+// The dataset is sorted in ascending order.
+//
+// Postcondition:
+// All values are removed from the dataset.
+// The dataset is empty, and size is set to 0.
 void Container::deleteAll()
 {
-    // Precondition:
-    // The dataset is sorted in ascending order.
-    //
-    // Postcondition:
-    // All values are removed from the dataset.
-    // The dataset is empty, and size is set to 0.
     delete[] data;
     data = nullptr;
     size = 0;
 }
 
+// Precondition:
+// The dataset is sorted in ascending order.
+//
+// Postcondition:
+// Displays the dataset in ascending order,
+// 15 values per row.
 void Container::display() const
 {
-    // Precondition:
-    // The dataset contains zero or more values.
-    //
-    // Postcondition:
-    // The dataset is displayed in ascending order,
-    // 15 values per row.
 
     for (int i = 0; i < size; ++i)
     {
-        // Start each row with indentation
+        // Indent the beginning of each row
         if (i % 15 == 0)
         {
             cout << "\t";
         }
 
-        // Display each value in a field of width 4
-        cout << setw(4) << data[i];
+        // Display value with guaranteed separation
+        cout << setw(3) << static_cast<int>(data[i]) << " ";
 
-        // Start a new row after every 15 values
+        // New line after every 15 values
         if ((i + 1) % 15 == 0)
         {
             cout << "\n";
         }
     }
 
-    // If the last row did not contain exactly 15 values,
-    // move to the next line.
+    // New line if the final row has fewer than 15 values
     if (size % 15 != 0)
     {
         cout << "\n";
     }
 }
 
-
-
-//void Container::readFromFile(const string& filename)
-//{
-//    // Precondition:
-//    // The dataset is sorted in ascending order.
-//    //
-//    // Postcondition:
-//    // Values from the specified file are read and inserted into the dataset.
-//    // The dataset remains sorted in ascending order.
-//    // The size of the dataset increases accordingly.
-//    ifstream inputFile(filename);
-//    if (!inputFile)
-//    {
-//        cout << "\n\tERROR: File, " << filename << ", cannot be found.\n";
-//        return;
-//    }
-//    double value;
-//    while (inputFile >> value)
-//    {
-//        insertValue(value);
-//    }
-//    inputFile.close();
-//}
-
-void Container::readFromFile(const string& filename)
+// Precondition:
+// filename contains the name of a text file.
+//
+// Postcondition:
+// Numeric values from the file are inserted into the dataset.
+// The dataset remains sorted in ascending order.
+// Returns the number of values successfully inserted.
+// Returns 0 if the file cannot be opened.
+int Container::readFromFile(const string& filename)
 {
-    // Precondition:
-    // filename contains the name of a text file.
-    //
-    // Postcondition:
-    // Each row is read as one value and inserted into the dataset.
-    // The dataset remains sorted in ascending order.
 
     ifstream inputFile(filename);
-
     if (!inputFile)
     {
         cout << "\n\tERROR: File, "
             << filename
             << ", cannot be found.\n";
-        return;
+
+        return 0;
     }
 
-    string row;
+    int count = 0;
+    double value;
 
-    while (getline(inputFile, row))
+    while (inputFile >> value)
     {
-        if (!row.empty())
-        {
-            double value = stod(row);
-
-            insertValue(value);
-        }
+        insertValue(value);
+        ++count;
     }
 
     inputFile.close();
+
+    return count;
+}
+
+// Precondition: The dataset is not empty.
+// Postcondition: Returns the mean (average) of the dataset.
+double Container::calculateMean() const
+{
+    if (size == 0)
+    {
+        cout << "\n\tException Error: Dataset is empty.\n";
+        return 0.0; // Return 0 or handle the error as appropriate
+    }
+    double sum = 0.0;
+    for (int i = 0; i < size; ++i)
+    {
+        sum += data[i];
+    }
+    return sum / size;
+}
+
+
+// Precondition: The dataset is sorted in ascending order and is not empty.
+// Postcondition: Returns the median of the dataset.
+double Container::calculateMedian() const
+{
+    if (size == 0)
+    {
+        cout << "\n\tException Error: Dataset is empty.\n";
+        return 0.0; // Return 0 or handle the error as appropriate
+    }
+
+    if (size % 2 == 0)
+    {
+        // If the size is even, return the average of the two middle values
+        int midIndex = size / 2;
+        return (data[midIndex - 1] + data[midIndex]) / 2.0;
+    }
+    else
+    {
+        // If the size is odd, return the middle value
+        int midIndex = size / 2;
+        return data[midIndex];
+    }
+}
+
+// Precondition: The dataset is sorted in ascending order and is not empty.
+// Postcondition: Returns the mode of the dataset. If there are multiple modes, returns the smallest one.
+string Container::calculateMode() const
+{
+    if (size == 0)
+    {
+        cout << "\n\tException Error: Dataset is empty.\n";
+        return ""; // Return an empty string or handle the error as appropriate
+    }
+    int maxCount = 1;
+    int currentCount = 1;
+    string modes = "";
+    bool hasMultipleModes = false;
+    for (int i = 1; i < size; ++i)
+    {
+        if (data[i] == data[i - 1])
+        {
+            ++currentCount;
+        }
+        else
+        {
+            if (currentCount > maxCount)
+            {
+                maxCount = currentCount;
+                modes = to_string(static_cast<int>(data[i - 1]));
+                hasMultipleModes = false;
+            }
+            else if (currentCount == maxCount)
+            {
+                modes += " " + to_string(static_cast<int>(data[i - 1]));
+                hasMultipleModes = true;
+            }
+            currentCount = 1;
+        }
+    }
+    // Check the last value
+    if (currentCount > maxCount)
+    {
+        modes = to_string(static_cast<int>(data[size - 1]));
+        hasMultipleModes = false;
+    }
+    else if (currentCount == maxCount)
+    {
+        modes += " " + to_string(static_cast<int>(data[size - 1]));
+        hasMultipleModes = true;
+    }
+    return modes;
+}
+
+// Precondition: The dataset is not empty.
+// Postcondition: Returns the standard deviation of the dataset. If the dataset is a sample, uses n-1 in the denominator; if it's a population, uses n.
+double Container::calculateStandardDeviation() const
+{
+    double mean = calculateMean();
+    double sumSquaredDifferences = 0.0;
+    for (int i = 0; i < size; ++i)
+    {
+        double difference = data[i] - mean;
+        sumSquaredDifferences += difference * difference;
+    }
+    double variance;
+    if (isSample)
+    {
+        variance = sumSquaredDifferences / (size - 1); // Sample standard deviation
+    }
+    else
+    {
+        variance = sumSquaredDifferences / size; // Population standard deviation
+    }
+    return sqrt(variance);
 }

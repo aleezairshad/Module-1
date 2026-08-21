@@ -1,5 +1,5 @@
-// Name: Hany, Aleeza, and Thanh
-// Description: Module 1 - The Phases of Software Development 
+// Name: Hany, Aleeza, and Tuniphn
+// Description: Modul1 - The Phases of Software Development 
 
 #include <iostream>
 #include <string>
@@ -17,13 +17,11 @@ char menuOption2();
 char menuOption3();
 
 
-
-
 int main()
 {
 
 	Container dataset; // Create an instance of the Container class
-
+	cout << "\tModul 1 by Hany, Aleeza, and Tuniphn" << "\n\n";
     cout << "\tWhat are Descriptive Statistics?" << "\n\n";
     cout << "\tDescriptive statistics summarize certain aspects of a data set (Sample or Population)" << "\n";
     cout << "\tusing numeric calculations." << "\n\n";
@@ -34,12 +32,13 @@ int main()
     bool running = true;
     while (running)
     {
-		system("cls"); // Clear the console screen (Windows-specific)
+		system("cls"); // Clear the console screen 
 
 		cout << "\n\tAddress of Dynamic array: " << static_cast<void*>(dataset.getData()) << "\n";
 
         cout << "\tDataset: (" << (dataset.getIsSample() ? "Sample" : "Population") << ")\n\n";
 
+		// Display the dataset values if there are at least 2 values
         if (dataset.getSize() < 2)
         {
             cout << "\tERROR: Data Set requires at least 2 values.\n\n";
@@ -52,8 +51,9 @@ int main()
 		}
     
 
-        char choice = menuOption();
+		char choice = menuOption(); // Get the user's menu option selection
 
+		// Check if the choice is an uppercase letter (A-Z) and if the dataset has at least 2 values
         if (choice >= 'A' && choice <= 'Z')
         {
             if (dataset.getSize() == 0)
@@ -70,6 +70,7 @@ int main()
             }
         }
 
+		// Handle the user's menu option selection
         switch (choice)
         {
         case '0':
@@ -78,16 +79,16 @@ int main()
             break;
         case '1':
         {
-            char configChoice = menuOption1();
+			char configChoice = menuOption1(); // Get the user's configuration option selection
             switch (configChoice)
             {
             case 'A':
-                dataset.setIsSample(true);
+				dataset.setIsSample(true); // Set the dataset to be a sample
                 cout << "\n\tDataset configured as Sample.\n\n";
                 system("pause");
                 break;
             case 'B':
-                dataset.setIsSample(false);
+                dataset.setIsSample(false); // Set the dataset to be a population
                 cout << "\n\tDataset configured as Population.\n\n";
                 system("pause");
                 break;
@@ -97,70 +98,148 @@ int main()
                 break;
 
             }
+			break;
         }
 
-            
-            break;
         case '2':
+        {
+			bool insertMenuRunning = true; // Flag to control the insert menu loop
+			// Loop until the user chooses to return from the insert menu
+            while (insertMenuRunning)
             {
                 char insertChoice = menuOption2();
+
                 switch (insertChoice)
                 {
                 case 'A':
                 {
-					double value = inputDouble("\n\tSpecify an integer value to be inserted to the Dataset: ");
-					dataset.insertValue(value);
-					cout << "\n\t" << value << " has been inserted...\n\n";
+                    double value = inputDouble("\n\tSpecify an integer value to be inserted to the Dataset: ");
+
+					dataset.insertValue(value); // Insert the specified value into the dataset
+
+                    cout << "\n\t" << value << " has been inserted...\n\n";
+
                     system("pause");
                     break;
                 }
+
                 case 'B':
                 {
-					int count = inputInteger("\n\tSpecify a number of values to be randomly generated into the Dataset: ", true);
-					dataset.insertRandomValues(count);
-					cout << "\n\tCONFIRMATION: Inserted " << count << " random values into the Dataset.\n\n";
-					system("pause");
+                    int count = inputInteger("\n\tSpecify a number of values to be randomly generated into the Dataset: ", true);
+
+					dataset.insertRandomValues(count);  // Insert the specified number of random values into the dataset
+
+                    cout << "\n\tCONFIRMATION: Inserted " << count << " random values into the Dataset.\n\n";
+                    system("pause");
                     break;
                 }
+
                 case 'C':
-
                 {
-					string filename = inputString("\n\tSpecify a data text file name to read: ", false);
+                    string filename = inputString("\n\tSpecify a data text file name to read: ", false);
 
-					dataset.readFromFile(filename);
+					int count = dataset.readFromFile(filename); // Read values from the specified file and insert them into the dataset
+
+                    if (count > 0)
+                    {
+                        cout << "\n\tCONFIRMATION: " << count << " element(s) have been read and inserted to the Dataset.\n\n";
+                    }
+
+                    system("pause");
+                    break;
+                }
+
+                case 'R':
+                    insertMenuRunning = false;
 					cout << "\n\n";
 					system("pause");
-
                     break;
                 }
-				case 'R':
-                    cout << "\n\n";
+            }
+
+            break;
+        }
+
+        case '3':
+        {
+            bool deleteMenuRunning = true;
+
+            while (deleteMenuRunning)
+            {
+				char deleteChoice = menuOption3(); // Get the user's delete menu option selection
+
+                switch (deleteChoice)
+                {
+                case 'A':
+                {
+                    double value = inputDouble("\n\tSpecify an integer value to find and be deleted from the Dataset: ");
+
+                    char option = inputChar("\n\tDelete *-all elements or 1-one element found with value " + to_string(static_cast<int>(value)) + "? ", string("*1"));
+
+                    bool deleted;
+					// Call the deleteValue function with the appropriate parameters based on the user's choice
+                    if (option == '*')
+                    {
+                        deleted = dataset.deleteValue(value, true);
+                    }
+                    else
+                    {
+                        deleted = dataset.deleteValue(value, false);
+                    }
+
+                    if (!deleted)
+                    {
+                        cout << "\n\tERROR: No element " << value << " has been found and deleted.\n\n";
+                    }
+                    else
+                    {
+                        cout << "\n\tElement(s) successfully deleted.\n\n";
+                    }
+
+                    system("pause");
+                    break;
+                }
+
+                case 'B':
+                {
+                    int start = inputInteger("\n\tSpecify a starting integer value to be deleted from the Dataset: ");
+
+                    int end = inputInteger("\n\tSpecify an ending integer value to be deleted from the Dataset: ");
+
+					bool deleted = dataset.deleteRange(start, end);  // Call the deleteRange function to delete values within the specified range
+
+                    if (!deleted)
+                    {
+                        cout << "\n\tERROR: No element in range ("<< start << ".." << end << ") has been found and deleted.\n\n";
+                    }
+
+                    system("pause");
+                    break;
+                }
+
+                case 'C':
+                {
+                    dataset.deleteAll();
+
+                    cout << "\n\tDataset has been purged of all elements.\n\n";
+
+                    system("pause");
+                    break;
+                }
+
+                case 'R':
+                    deleteMenuRunning = false;
+					cout << "\n\n";
+
 					system("pause");
                     break;
                 }
-		}
-            
-            break;
-        case '3':
-            {
-                char deleteChoice = menuOption3();
-                switch (deleteChoice)
-				{
-                    case 'A':
-						break;
-					case 'B':
-                        break;
-					case 'C':
-                        break;
-					case 'R':
-						cout << "\n\n";
-                        system("pause");
-                        break;
-                }
-		}
-            
+            }
 
             break;
+        }
+            
+
         case 'A':
             
             break;
@@ -177,14 +256,40 @@ int main()
             cout << "\tFind Sum" << "\n";
             break;
         case 'F':
-            cout << "\tFind Mean" << "\n";
+        {
+
+            double meanValue = dataset.calculateMean(); // Calculate the mean of the dataset
+
+            cout << "\n\tMean " << fixed << setprecision(2) << setw(25) << "= " << meanValue << "\n\n";
+            system("pause");
+
             break;
+        }
 		case 'G':
+        {
+			double medianValue = dataset.calculateMedian(); // Calculate the median of the dataset
+            cout << "\n\tMedian " << fixed << setprecision(2) << setw(23) << "= " << medianValue << "\n\n";
+			system("pause");
+
 			break;
+		}
         case 'H':
-			break;
-		case 'I':
-			break;
+        {
+            string modeValue = dataset.calculateMode(); // Calculate the mode of the dataset
+			cout << "\n\tMode " << setw(25) << "= " << modeValue << "\n\n";
+
+			system("pause");
+
+            break;
+        }
+        case 'I':
+        {
+			// Calculate the standard deviation of the dataset
+			cout << "\n\tStandard Deviation " << setw(12) << "= " << fixed << setprecision(7) << dataset.calculateStandardDeviation() << "\n\n"; 
+			system("pause");
+
+            break;
+        }
 		case 'J':
 			break;
 		case 'K':
@@ -284,6 +389,8 @@ char menuOption1()
     return inputChar("\n\tOption: ", string("ABR"));
 }
 
+//Precondition: None
+//Postcondition: Returns a char value representing the user's menu option selection
 char menuOption2()
 {
     system("cls"); // Clear the console screen (Windows-specific)
@@ -298,7 +405,8 @@ char menuOption2()
     return inputChar("\n\tOption: ", string("ABCR"));
 }
 
-
+//Precondition: None
+//Postcondition: Returns a char value representing the user's menu option selection
 char menuOption3()
 {
     system("cls"); // Clear the console screen (Windows-specific)
