@@ -2,7 +2,6 @@
 #include <cstdlib> 
 #include <iomanip> 
 #include <fstream>
-#include <cmath>
 
 
 #include <algorithm> // For std::sort
@@ -10,22 +9,22 @@
 
 Container::Container()
 {
-	data = nullptr;
-	size = 0;
-	isSample = true; // Default to sample data
+    data = nullptr;
+    size = 0;
+    isSample = true; // Default to sample data
 }
 
 Container::~Container()
 {
-	delete[] data;
-	data = nullptr;
+    delete[] data;
+    data = nullptr;
 }
 
 // Precondition: None
 // Postcondition: Returns the size of the dataset
 int Container::getSize() const
 {
-	return size;
+    return size;
 }
 
 
@@ -33,21 +32,21 @@ int Container::getSize() const
 // Postcondition: Returns true if the dataset is a sample, false if it is a population
 bool Container::getIsSample() const
 {
-	return isSample;
+    return isSample;
 }
 
 // Precondition: getIsSample() must be called before this function to determine the current state of the dataset
 // Postcondition: Sets the dataset to be a sample or a population based on the input parameter
 void Container::setIsSample(bool sample)
 {
-	isSample = sample;
+    isSample = sample;
 }
 
 // Precondition: None
 // Postcondition: Returns a pointer to the dynamic array containing the dataset
 double* Container::getData() const
 {
-	return data;
+    return data;
 }
 
 // sorting the data in ascending order
@@ -91,12 +90,12 @@ void Container::insertValue(double value)
 // The size of the dataset increases by 'count'.
 void Container::insertRandomValues(int count)
 {
-	const int MAX_RAND = 101; // Maximum random value (exclusive)
+    const int MAX_RAND = 101; // Maximum random value (exclusive)
     for (int i = 0; i < count; ++i)
     {
-		// Generate a random value between 0 and 100
-		int randomInt = rand() % MAX_RAND; // Random integer between 0 and 100
-		double randomValue = static_cast<double>(randomInt);
+        // Generate a random value between 0 and 100
+        int randomInt = rand() % MAX_RAND; // Random integer between 0 and 100
+        double randomValue = static_cast<double>(randomInt);
         insertValue(randomValue);
     }
 }
@@ -107,7 +106,7 @@ void Container::insertRandomValues(int count)
 bool Container::deleteValue(double value, bool deleteAll)
 {
     int deleteCount = 0;
-	// Count how many occurrences of the value to delete exist in the dataset
+    // Count how many occurrences of the value to delete exist in the dataset
     for (int i = 0; i < size; ++i)
     {
         if (data[i] == value)
@@ -119,14 +118,14 @@ bool Container::deleteValue(double value, bool deleteAll)
             }
         }
     }
-	// If no occurrences of the value were found, return false
+    // If no occurrences of the value were found, return false
     if (deleteCount == 0)
     {
         return false;
     }
 
     int newSize = size - deleteCount;
-	// If the new size is zero, delete the data array and set it to nullptr
+    // If the new size is zero, delete the data array and set it to nullptr
     if (newSize == 0)
     {
         delete[] data;
@@ -135,11 +134,11 @@ bool Container::deleteValue(double value, bool deleteAll)
         return true;
     }
 
-	double* newData = new double[newSize]; // Create a new array to hold the remaining values
+    double* newData = new double[newSize]; // Create a new array to hold the remaining values
 
     int index = 0;
     int deleted = 0;
-	// Copy over the values that are not equal to the value to delete
+    // Copy over the values that are not equal to the value to delete
     for (int i = 0; i < size; ++i)
     {
         if (data[i] == value)
@@ -173,7 +172,7 @@ bool Container::deleteValue(double value, bool deleteAll)
 bool Container::deleteRange(double start, double end)
 {
     int newSize = 0;
-	// Count how many values are outside the specified range
+    // Count how many values are outside the specified range
     for (int i = 0; i < size; ++i)
     {
         if (data[i] < start || data[i] > end)
@@ -181,12 +180,12 @@ bool Container::deleteRange(double start, double end)
             ++newSize;
         }
     }
-	// If the new size is the same as the current size, no values were deleted
+    // If the new size is the same as the current size, no values were deleted
     if (newSize == size)
     {
         return false;
     }
-	// If the new size is zero, delete the data array and set it to nullptr
+    // If the new size is zero, delete the data array and set it to nullptr
     if (newSize == 0)
     {
         delete[] data;
@@ -195,10 +194,10 @@ bool Container::deleteRange(double start, double end)
         return true;
     }
 
-	double* newData = new double[newSize]; // Create a new array to hold the remaining values
+    double* newData = new double[newSize]; // Create a new array to hold the remaining values
 
     int index = 0;
-	// Copy over the values that are outside the specified range
+    // Copy over the values that are outside the specified range
     for (int i = 0; i < size; ++i)
     {
         if (data[i] < start || data[i] > end)
@@ -238,7 +237,7 @@ void Container::deleteAll()
 // 15 values per row.
 void Container::display() const
 {
-	const int MAX_VAL = 15; // Maximum number of values per row
+    const int MAX_VAL = 15; // Maximum number of values per row
 
     for (int i = 0; i < size; ++i)
     {
@@ -322,8 +321,8 @@ double Container::calculateMean() const
 // Postcondition: Returns the median of the dataset.
 double Container::calculateMedian() const
 {
-	const int TWO = 2; // Define a constant for the value 2
-	const double TWO_FRAC = 2.0; // Define a constant for the value 2.0
+    const int TWO = 2; // Define a constant for the value 2
+    const double TWO_FRAC = 2.0; // Define a constant for the value 2.0
     if (size == 0)
     {
         cout << "\n\tException Error: Dataset is empty.\n";
@@ -430,10 +429,10 @@ double Container::calculateSkewness() const
     double stdDev = calculateStandardDeviation();
     double sumCubedDifferences = 0.0;
 
-	//validate that stdDev is not zero to avoid division by zero
+    //validate that stdDev is not zero to avoid division by zero
     if (stdDev == 0.0)
     {
-		return NAN; // Return NaN (Not a Number) if standard deviation is zero
+        return NAN; // Return NaN (Not a Number) if standard deviation is zero
     }
 
 
@@ -447,12 +446,12 @@ double Container::calculateSkewness() const
     if (isSample)
     {
         //skewness = (size * (size - 1) * (size - 2)) * sumCubedDifferences / ((size - 1) * (size - 1) * (size - 1) * stdDev * stdDev * stdDev);
-		skewness = (static_cast<double>(size) / ((size - 1) * (size - 2))) * (sumCubedDifferences / pow(stdDev, 3));
+        skewness = (static_cast<double>(size) / ((size - 1) * (size - 2))) * (sumCubedDifferences / pow(stdDev, 3));
     }
     else
     {
-       // skewness = sumCubedDifferences / (size * stdDev * stdDev * stdDev);
-		skewness = (sumCubedDifferences / (size * pow(stdDev, 3)));
+        // skewness = sumCubedDifferences / (size * stdDev * stdDev * stdDev);
+        skewness = (sumCubedDifferences / (size * pow(stdDev, 3)));
     }
     return skewness;
 }
@@ -480,13 +479,13 @@ double Container::calculateKurtosis() const
     {
         double difference = data[i] - mean;
         //sumFourthDifferences += difference * difference * difference * difference;
-		sumFourthDifferences += pow(difference, 4);
+        sumFourthDifferences += pow(difference, 4);
     }
     double kurtosis;
     if (isSample)
     {
-   
-		kurtosis = ((static_cast<double>(size) * (size + 1) / ((size - 1) * (size - 2) * (size - 3))) * (sumFourthDifferences / pow(stdDev, 4)));
+
+        kurtosis = ((static_cast<double>(size) * (size + 1) / ((size - 1) * (size - 2) * (size - 3))) * (sumFourthDifferences / pow(stdDev, 4)));
     }
     else
     {
@@ -500,17 +499,17 @@ double Container::calculateKurtosis() const
 // or if the standard deviation is zero.
 double Container::calculateKurtosisExcess() const
 {
-	//validate sample size for kurtosis excess calculation
+    //validate sample size for kurtosis excess calculation
     if (isSample && size < 4)
     {
         return NAN; // Return NaN (Not a Number) if sample size is less than 4
     }
 
-	double mean = calculateMean();
+    double mean = calculateMean();
     double stdDev = calculateStandardDeviation();
-	double sumFourthDifferences = 0.0;
+    double sumFourthDifferences = 0.0;
 
-	//validate that stdDev is not zero to avoid division by zero
+    //validate that stdDev is not zero to avoid division by zero
     if (stdDev == 0.0)
     {
         return NAN; // Return NaN (Not a Number) if standard deviation is zero
@@ -519,18 +518,18 @@ double Container::calculateKurtosisExcess() const
     {
         double difference = data[i] - mean;
         sumFourthDifferences += pow(difference, 4);
-	}
+    }
     double kurtosisExcess;
     if (isSample)
     {
-        kurtosisExcess = (static_cast<double>(size) * (size + 1) / ((size - 1) * (size - 2) * (size - 3))) * (sumFourthDifferences / pow(stdDev, 4)) - 
+        kurtosisExcess = (static_cast<double>(size) * (size + 1) / ((size - 1) * (size - 2) * (size - 3))) * (sumFourthDifferences / pow(stdDev, 4)) -
             (3.0 * (size - 1) * (size - 1) / ((size - 2) * (size - 3)));
     }
     else
     {
         kurtosisExcess = (sumFourthDifferences / (size * pow(stdDev, 4))) - 3.0;
     }
-	return kurtosisExcess;
+    return kurtosisExcess;
 
 }
 
@@ -547,4 +546,180 @@ double Container::calculateCoefficientOfVariation() const
         return NAN; // Return NaN (Not a Number) if mean is zero
     }
     return stdDev / mean;
+}
+
+
+//Thanh's part J-R
+double Container::calculateVariance() const //not yet checked for if the total item = 1, the sample formula will cause crash (can't divide by 0 because 1-1 = 0)
+{
+    if (getSize() == 0)
+    {
+        throw "\n\tException Error: Dataset is empty.";
+    }
+
+    if (getIsSample() && getSize() == 1) //Just in case the array has 1 only 1 value, the formula will divided by 0 (not good!!)
+    {
+        throw "\n\tException Error: Sample variance requires at least 2 values.";
+    }
+    bool sample = getIsSample();
+    double sumOfSquaredDeviations = 0;
+    double mean = 0;
+    int totalItems = getSize();
+    
+    mean = calculateMean();
+
+    for (int i = 0; i < totalItems; i++)
+    {
+        sumOfSquaredDeviations += pow((mean - data[i]), 2);
+    }
+
+    if (sample)
+    {
+        return sumOfSquaredDeviations / (totalItems - 1);
+    }
+    else
+    {
+        return sumOfSquaredDeviations / (totalItems);
+    }
+}
+
+double Container::calculateMidrange() const // empty array will crash
+{
+    if (getSize() == 0)
+    {
+        throw "\n\tException Error: Dataset is empty.";
+    }
+
+    return (data[getSize() - 1] + data[0]) / 2.0;
+}
+void Container::calculateQuartiles(double &q1, double &q2, double &q3) const
+{
+    if (size == 0)
+    {
+        throw "\n\tException Error: Dataset is empty.";
+    }
+
+
+    int totalSize = getSize();
+
+    int middleIndex = totalSize / 2;
+
+    if (totalSize % 2 == 0)
+    {
+        q2 = (data[middleIndex - 1] + data[middleIndex]) / 2.0;
+
+        int halfSize = totalSize / 2; //divide the total size in half to calculate quartile 1 and 3 (lower and upper half)
+
+        if (halfSize % 2 == 0)
+        {
+            int middleIndexQ1 = halfSize / 2;
+
+            q1 = (data[middleIndexQ1 - 1] + data[middleIndexQ1]) / 2.0;
+
+            int middleIndexQ3 = middleIndex + middleIndexQ1;
+
+            q3 = (data[middleIndexQ3 - 1] + data[middleIndexQ3]) / 2.0;
+        }
+        else
+        {
+            int middleIndexQ1 = halfSize / 2;
+
+            q1 = data[middleIndexQ1];
+
+            int middleIndexQ3 = middleIndexQ1 + middleIndex;
+
+            q3 = data[middleIndexQ3];
+        }
+
+    }
+    else
+    {
+        q2 = data[middleIndex];
+
+        int halfSize = totalSize / 2;
+       
+        if (halfSize % 2 == 0)
+        {
+            int middleIndexQ1 = halfSize / 2;
+
+            q1 = (data[middleIndexQ1 - 1] + data[middleIndexQ1]) / 2.0;
+
+            int middleIndexQ3 = middleIndex + middleIndexQ1;
+
+            q3 = (data[middleIndexQ3] + data[middleIndexQ3 + 1]) / 2.0;
+        }
+        else
+        {
+            int middleIndexQ1 = halfSize / 2;
+
+            q1 = data[middleIndexQ1];
+
+            int middleIndexQ3 = middleIndexQ1 + middleIndex;
+
+            q3 = data[middleIndexQ3 + 1];
+        }
+
+    }
+}
+double Container::calculateInterquartileRange(double q1, double q3) const
+{
+    return q3 - q1;
+}
+void Container::calculateOutliers(double q1, double q3, double interquartileRange) const
+{
+    double lowerFence = q1 - (1.5 * interquartileRange);
+    double upperFence = q3 + (1.5 * interquartileRange);
+
+    for (int i = 0; i < getSize(); i++)
+    {
+        if (data[i] < lowerFence || data[i] > upperFence)
+        {
+            cout << "OutlierFound at index..." << i;
+        }
+    }
+}
+double Container::calculateSumOfSquares() const
+{
+    double mean = calculateMean();
+    double sumOfSquares = 0.0;
+
+    for (int i = 0; i < getSize(); i++)
+    {
+        sumOfSquares += pow((data[i] - mean), 2);
+    }
+
+    return sumOfSquares;
+}
+double Container::calculateMeanAbsoluteDeviation() const
+{
+    double mean = calculateMean();
+    double totalDeviation = 0.0;
+
+    for (int i = 0; i < getSize(); i++)
+    {
+        totalDeviation += abs(data[i] - mean);
+    }
+
+    return totalDeviation / getSize();
+}
+double Container::calculateRootMeanSquare() const
+{
+    double sumOfSquare = 0.0;
+
+    for (int i = 0; i < getSize(); i++)
+    {
+        sumOfSquare += pow(data[i], 2);
+    }
+
+    double meanOfSquares = sumOfSquare / getSize();
+
+    return sqrt(meanOfSquares);
+}
+double Container::calculateStandardErrorOfMean() const
+{
+    double stdDeviation = calculateStandardDeviation();
+
+    double rootedSize = sqrt(getSize());
+
+    return stdDeviation / rootedSize;
 }
