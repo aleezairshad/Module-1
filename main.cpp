@@ -248,7 +248,7 @@ int main()
             {
                 double minimum = dataset.calculateMinimum();
 
-                cout << "\n\tMinimum" << setw(30) << "= " << right << static_cast<int>(minimum) << "\n\n\n";
+                cout << "\n\t" << left << setw(28) << "Minimum" << "= " << right << static_cast<int>(minimum) << "\n\n\n";
             }
             catch (const char* message)
             {
@@ -264,7 +264,7 @@ int main()
             {
                 double maximum = dataset.calculateMaximum();
 
-                cout << "\n\tMaximum" << setw(30) << "= " << right << static_cast<int>(maximum) << "\n\n\n";
+                cout << "\n\t" << left << setw(28) << "Maximum" << "= " << right << static_cast<int>(maximum) << "\n\n\n";
             }
             catch (const char* message)
             {
@@ -280,7 +280,7 @@ int main()
             {
                 double range = dataset.calculateRange();
 
-                cout << "\n\tRange" << setw(30) << "= " << right << static_cast<int>(range) << "\n\n\n";
+                cout << "\n\t" << left << setw(28) << "Range" << "= " << right << static_cast<int>(range) << "\n\n\n";
             }
             catch (const char* message)
             {
@@ -292,14 +292,14 @@ int main()
         break;
         case 'D':
         {
-            cout << "\n\tSize" << setw(30) << "= " << right << dataset.getSize() << "\n\n\n";
+            cout << "\n\t" << left << setw(28) << "Size" << "= " << right << dataset.getSize() << "\n\n\n";
 
             system("pause");
         }
         break;
         case 'E':
         {
-            cout << "\n\tSum" << setw(30) << "= " << right << static_cast<int>(dataset.calculateSum()) << "\n\n\n";
+            cout << "\n\t" << left << setw(28) << "Sum" << "= " << right << static_cast<int>(dataset.calculateSum()) << "\n\n\n";
 
             system("pause");
         }
@@ -376,7 +376,7 @@ int main()
             {
                 double relativeStandardDeviation = dataset.calculateRelativeStandardDeviation();
 
-                cout << "\n\tRelative Standard Deviation" << setw(30) << "= " << right << fixed << setprecision(7) << relativeStandardDeviation << "\n\n\n";
+                cout << "\n\t" << left << setw(28) << "Relative Standard Deviation" << "= " << right << fixed << setprecision(7) << relativeStandardDeviation << "\n\n\n";
             }
             catch (const char* message)
             {
