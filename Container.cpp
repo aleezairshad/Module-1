@@ -550,6 +550,8 @@ double Container::calculateCoefficientOfVariation() const
 
 
 //Thanh's part J-R
+//Precondition: dataset cannot be empty, if the dataset is a sample, it must contain at least 2 element(s)/item(s)
+//Postcondition: Return variance of dataset
 double Container::calculateVariance() const //not yet checked for if the total item = 1, the sample formula will cause crash (can't divide by 0 because 1-1 = 0)
 {
     if (getSize() == 0)
@@ -583,6 +585,8 @@ double Container::calculateVariance() const //not yet checked for if the total i
     }
 }
 
+//Precondition: dataset cannot be empty and must be sorted
+//Postcondition: return the midrange value of dataset
 double Container::calculateMidrange() const // empty array will crash
 {
     if (getSize() == 0)
@@ -592,6 +596,9 @@ double Container::calculateMidrange() const // empty array will crash
 
     return (data[getSize() - 1] + data[0]) / 2.0;
 }
+
+//Precondition: dataset must contain at least 2 element(s)/item(s) and must be sorted
+//Postcondition: Stores the calculated quartile in q1,q2,q3 based on number of elements in dataset
 void Container::calculateQuartiles(double &q1, double &q2, double &q3) const
 {
     if (size == 0)
@@ -661,12 +668,19 @@ void Container::calculateQuartiles(double &q1, double &q2, double &q3) const
 
     }
 }
+
+//Precondition: q1 and q3 must contain valid values
+//Postcondition: return the value of interquartile range of dataset
 double Container::calculateInterquartileRange(double q1, double q3) const
 {
     return q3 - q1;
 }
+
+//Precondition: q1, q3, interQuartileRange (IQR) must contain valid values
+//Postcondition: display all outliers in dataset and display none if there's no outlier
 void Container::calculateOutliers(double q1, double q3, double interquartileRange) const
 {
+    bool found = false;
     double lowerFence = q1 - (1.5 * interquartileRange);
     double upperFence = q3 + (1.5 * interquartileRange);
 
@@ -674,10 +688,19 @@ void Container::calculateOutliers(double q1, double q3, double interquartileRang
     {
         if (data[i] < lowerFence || data[i] > upperFence)
         {
-            cout << "OutlierFound at index..." << i;
+            cout << "\n\tOutliers" << setw(30) << "= " << right << fixed << setprecision(7) << data[i] << "\n";
+            found = true;
         }
     }
+
+    if (!found)
+    {
+        cout << "\n\tOutliers" << setw(30) << "= " << right << fixed << setprecision(7) << "none\n";
+    }
 }
+
+//Precondition: dataset cannot be empty 
+//Postcondition: return the sum of square deviation from the mean (calculateMean)
 double Container::calculateSumOfSquares() const
 {
     double mean = calculateMean();
@@ -690,6 +713,9 @@ double Container::calculateSumOfSquares() const
 
     return sumOfSquares;
 }
+
+//Precondition: dataset cannot be empty
+//Postcondition: return the mean absolute deviation of dataset
 double Container::calculateMeanAbsoluteDeviation() const
 {
     double mean = calculateMean();
@@ -702,6 +728,9 @@ double Container::calculateMeanAbsoluteDeviation() const
 
     return totalDeviation / getSize();
 }
+
+//Precondition: dataset cannot be empty
+//Postcondition: return the root mean square of dataset
 double Container::calculateRootMeanSquare() const
 {
     double sumOfSquare = 0.0;
@@ -715,6 +744,9 @@ double Container::calculateRootMeanSquare() const
 
     return sqrt(meanOfSquares);
 }
+
+//Precondition: dataset cannot be empty, if dataset is a sample, must contain at least 2 element(s)/item(s)
+//Postcondition: return the standard error of mean of dataset
 double Container::calculateStandardErrorOfMean() const
 {
     double stdDeviation = calculateStandardDeviation();
