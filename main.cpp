@@ -21,6 +21,10 @@ char menuOption3();
 
 int main()
 {
+    double q1 = 0;
+    double q2 = 0;
+    double q3 = 0;
+    double iqr = 0;
 
     Container dataset; // Create an instance of the Container class
     cout << "\tModule 1 by Hany, Aleeza, and Thanh" << "\n\n";
@@ -300,20 +304,77 @@ int main()
             break;
         case 'L':
         {
+            dataset.calculateQuartiles(q1, q2, q3);
+            
+            if (dataset.getSize() <= 3)
+            {
+                cout << "\n\tQuartiles" << setw(30) << right << "Quartiles:";
+                cout << "\n\t" << setw(36) << right << "Q1 --> " << "unknown";
+                cout << "\n\t" << setw(36) << right << "Q2 --> " << q2;
+                cout << "\n\t" << setw(36) << right << "Q3 --> " << "unknown\n";
+            }
+            else
+            {
+                cout << "\n\tQuartiles" << setw(30) << right << "Quartiles:";
+                cout << "\n\t" << setw(36) << right << "Q1 --> " << q1;
+                cout << "\n\t" << setw(36) << right << "Q2 --> " << q2;
+                cout << "\n\t" << setw(36) << right << "Q3 --> " << q3 << "\n";
+            }
 
+            system("pause");
         }
             break;
         case 'M':
+        {
+            if (dataset.getSize() < 4)
+            {
+                cout << "\n\tInterquartile Range" << setw(30) << "= " << right << "unknown\n";
+            }
+            else
+            {
+                dataset.calculateQuartiles(q1, q2, q3); // prevent data change affect the calculation (so I recalculate)
+
+                iqr = dataset.calculateInterquartileRange(q1, q3);
+                cout << "\n\tInterquartile Range" << setw(30) << "= " << right << fixed << setprecision(7) << iqr << "\n";
+                system("pause");
+            }
+        }
             break;
         case 'N':
+        {
+            dataset.calculateQuartiles(q1, q2, q3); // prevent data change affect the calculation (so I recalculate)
+            iqr = dataset.calculateInterquartileRange(q1, q3); // prevent data change affect the calculation (so I recalculate)
+            dataset.calculateOutliers(q1,q3,iqr);
+            system("pause");
+        }
             break;
         case 'O':
+        {
+            double sumOfSquares = dataset.calculateSumOfSquares();
+            cout << "\n\tSum of Squares" << setw(30) << "= " << right << fixed << setprecision(7) << sumOfSquares << "\n";
+            system("pause");
+        }
             break;
         case 'P':
+        {
+            double meanAbsDeviation = dataset.calculateMeanAbsoluteDeviation();
+            cout << "\n\tMean Absolute Deviation" << setw(30) << "= " << right << fixed << setprecision(7) << meanAbsDeviation << "\n";
+            system("pause");
+        }
             break;
         case 'Q':
+        {
+            double rootMeanSquare = dataset.calculateRootMeanSquare();
+            cout << "\n\tRoot Mean Square" << setw(30) << "= " << right << fixed << setprecision(7) << rootMeanSquare << "\n";
+            system("pause");
+        }
             break;
         case 'R':
+        {
+            double stdErrorOfMean = dataset.calculateStandardErrorOfMean();
+            cout << "\n\tStandard Error of the Mean" << setw(30) << "= " << right << fixed << setprecision(7) << stdErrorOfMean << "\n";
+            system("pause");
+        }
             break;
         case 'S':
             break;
