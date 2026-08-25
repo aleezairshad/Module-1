@@ -551,6 +551,8 @@ double Container::calculateCoefficientOfVariation() const
 
 
 //Aleeza's part A-E
+// Precondition: The dataset is sorted in ascending order.
+// Postcondition: Returns the smallest value. Throws if the dataset is empty.
 double Container::calculateMinimum() const
 {
 	if (getSize() == 0)
@@ -561,6 +563,8 @@ double Container::calculateMinimum() const
 	return data[0];
 }
 
+// Precondition: The dataset is sorted in ascending order.
+// Postcondition: Returns the largest value. Throws if the dataset is empty.
 double Container::calculateMaximum() const
 {
 	if (getSize() == 0)
@@ -571,6 +575,8 @@ double Container::calculateMaximum() const
 	return data[getSize() - 1];
 }
 
+// Precondition: The dataset is sorted in ascending order.
+// Postcondition: Returns maximum minus minimum. Throws if the dataset is empty.
 double Container::calculateRange() const
 {
 	if (getSize() == 0)
@@ -581,6 +587,8 @@ double Container::calculateRange() const
 	return data[getSize() - 1] - data[0];
 }
 
+// Precondition: None
+// Postcondition: Returns the sum of all values. Returns 0 if the dataset is empty.
 double Container::calculateSum() const
 {
 	double sum = 0.0;
@@ -769,6 +777,8 @@ double Container::calculateStandardErrorOfMean() const
 }
 
 //Aleeza's part W-Z
+// Precondition: The dataset is not empty.
+// Postcondition: Returns relative standard deviation as a percent (CV * 100). Throws if empty or undefined.
 double Container::calculateRelativeStandardDeviation() const
 {
 	if (getSize() == 0)
@@ -786,6 +796,8 @@ double Container::calculateRelativeStandardDeviation() const
 	return coefficientOfVariation * 100.0;
 }
 
+// Precondition: The dataset is sorted and not empty.
+// Postcondition: Returns unique outlier values as a string, or "none" if there are no outliers.
 string Container::calculateOutliersString() const
 {
 	double q1 = 0.0;
@@ -799,14 +811,15 @@ string Container::calculateOutliersString() const
 	double upperFence = q3 + (1.5 * interquartileRange);
 
 	string outliers = "";
-	double lastOutlier = -1.0;
 	bool foundOutlier = false;
+	bool hasLastOutlier = false;
+	double lastOutlier = 0.0;
 
 	for (int i = 0; i < size; ++i)
 	{
 		if (data[i] < lowerFence || data[i] > upperFence)
 		{
-			if (!foundOutlier || data[i] != lastOutlier)
+			if (!hasLastOutlier || data[i] != lastOutlier)
 			{
 				if (!outliers.empty())
 				{
@@ -815,6 +828,7 @@ string Container::calculateOutliersString() const
 
 				outliers += to_string(static_cast<int>(data[i]));
 				lastOutlier = data[i];
+				hasLastOutlier = true;
 				foundOutlier = true;
 			}
 		}
@@ -828,6 +842,8 @@ string Container::calculateOutliersString() const
 	return outliers;
 }
 
+// Precondition: The dataset is sorted and not empty.
+// Postcondition: Writes a frequency table (value, count, percent) to out. Throws if empty.
 void Container::displayFrequencyTable(ostream& out) const
 {
 	if (size == 0)
@@ -858,6 +874,8 @@ void Container::displayFrequencyTable(ostream& out) const
 	}
 }
 
+// Precondition: The dataset is not empty.
+// Postcondition: Writes all statistical results and the frequency table to out. Throws if empty.
 void Container::displayAllStatistics(ostream& out) const
 {
 	if (size == 0)
@@ -872,37 +890,46 @@ void Container::displayAllStatistics(ostream& out) const
 	calculateQuartiles(q1, q2, q3);
 
 	double interquartileRange = calculateInterquartileRange(q1, q3);
+	string modes = calculateMode();
 
-	out << "\n\tMinimum" << setw(30) << "= " << right << static_cast<int>(data[0]) << "\n";
-	out << "\n\tMaximum" << setw(30) << "= " << right << static_cast<int>(data[size - 1]) << "\n";
-	out << "\n\tRange" << setw(30) << "= " << right << static_cast<int>(data[size - 1] - data[0]) << "\n";
-	out << "\n\tSize" << setw(30) << "= " << right << size << "\n";
-	out << "\n\tSum" << setw(30) << "= " << right << static_cast<int>(calculateSum()) << "\n";
-	out << "\n\tMean" << setw(30) << "= " << right << fixed << setprecision(2) << calculateMean() << "\n";
-	out << "\n\tMedian" << setw(30) << "= " << right << fixed << setprecision(2) << calculateMedian() << "\n";
-	out << "\n\tMode(s)" << setw(30) << "= " << calculateMode() << "\n";
-	out << "\n\tStandard Deviation" << setw(30) << "= " << right << fixed << setprecision(7) << calculateStandardDeviation() << "\n";
-	out << "\n\tVariance" << setw(30) << "= " << right << fixed << setprecision(7) << calculateVariance() << "\n";
-	out << "\n\tMidrange" << setw(30) << "= " << right << fixed << setprecision(7) << calculateMidrange() << "\n";
-	out << "\n\tQuartiles" << setw(30) << "Quartiles:\n";
-	out << "\t" << setw(36) << right << "Q1 --> " << fixed << setprecision(1) << q1 << "\n";
-	out << "\t" << setw(36) << right << "Q2 --> " << fixed << setprecision(1) << q2 << "\n";
-	out << "\t" << setw(36) << right << "Q3 --> " << fixed << setprecision(1) << q3 << "\n";
-	out << "\n\tInterquartile Range" << setw(30) << "= " << right << fixed << setprecision(1) << interquartileRange << "\n";
-	out << "\n\tOutliers" << setw(30) << "= " << calculateOutliersString() << "\n";
-	out << "\n\tSum of Squares" << setw(30) << "= " << right << fixed << setprecision(2) << calculateSumOfSquares() << "\n";
-	out << "\n\tMean Absolute Deviation" << setw(30) << "= " << right << fixed << setprecision(2) << calculateMeanAbsoluteDeviation() << "\n";
-	out << "\n\tRoot Mean Square" << setw(30) << "= " << right << fixed << setprecision(7) << calculateRootMeanSquare() << "\n";
-	out << "\n\tStandard Error of the Mean" << setw(30) << "= " << right << fixed << setprecision(7) << calculateStandardErrorOfMean() << "\n";
-	out << "\n\tSkewness" << setw(30) << "= " << right << fixed << setprecision(7) << calculateSkewness() << "\n";
-	out << "\n\tKurtosis" << setw(30) << "= " << right << fixed << setprecision(7) << calculateKurtosis() << "\n";
-	out << "\n\tKurtosis Excess" << setw(30) << "= " << right << fixed << setprecision(7) << calculateKurtosisExcess() << "\n";
-	out << "\n\tCoefficient of Variation" << setw(30) << "= " << right << fixed << setprecision(7) << calculateCoefficientOfVariation() << "\n";
-	out << "\n\tRelative Standard Deviation" << setw(30) << "= " << right << fixed << setprecision(7) << calculateRelativeStandardDeviation() << "\n";
+	if (!modes.empty() && modes[0] == ' ')
+	{
+		modes = modes.substr(1);
+	}
+
+	out << "\n";
+	out << "\t" << left << setw(28) << "Minimum" << "= " << right << static_cast<int>(data[0]) << "\n";
+	out << "\t" << left << setw(28) << "Maximum" << "= " << right << static_cast<int>(data[size - 1]) << "\n";
+	out << "\t" << left << setw(28) << "Range" << "= " << right << static_cast<int>(data[size - 1] - data[0]) << "\n";
+	out << "\t" << left << setw(28) << "Size" << "= " << right << size << "\n";
+	out << "\t" << left << setw(28) << "Sum" << "= " << right << static_cast<int>(calculateSum()) << "\n";
+	out << "\t" << left << setw(28) << "Mean" << "= " << right << fixed << setprecision(2) << calculateMean() << "\n";
+	out << "\t" << left << setw(28) << "Median" << "= " << right << fixed << setprecision(2) << calculateMedian() << "\n";
+	out << "\t" << left << setw(28) << "Mode(s)" << "= " << modes << "\n";
+	out << "\t" << left << setw(28) << "Standard Deviation" << "= " << right << fixed << setprecision(7) << calculateStandardDeviation() << "\n";
+	out << "\t" << left << setw(28) << "Variance" << "= " << right << fixed << setprecision(7) << calculateVariance() << "\n";
+	out << "\t" << left << setw(28) << "Midrange" << "= " << right << fixed << setprecision(7) << calculateMidrange() << "\n";
+	out << "\t" << left << setw(28) << "Quartiles" << "Quartiles:\n";
+	out << "\t" << setw(28) << " " << "Q1 --> " << right << fixed << setprecision(1) << q1 << "\n";
+	out << "\t" << setw(28) << " " << "Q2 --> " << right << fixed << setprecision(1) << q2 << "\n";
+	out << "\t" << setw(28) << " " << "Q3 --> " << right << fixed << setprecision(1) << q3 << "\n";
+	out << "\t" << left << setw(28) << "Interquartile Range" << "= " << right << fixed << setprecision(1) << interquartileRange << "\n";
+	out << "\t" << left << setw(28) << "Outliers" << "= " << calculateOutliersString() << "\n";
+	out << "\t" << left << setw(28) << "Sum of Squares" << "= " << right << fixed << setprecision(2) << calculateSumOfSquares() << "\n";
+	out << "\t" << left << setw(28) << "Mean Absolute Deviation" << "= " << right << fixed << setprecision(2) << calculateMeanAbsoluteDeviation() << "\n";
+	out << "\t" << left << setw(28) << "Root Mean Square" << "= " << right << fixed << setprecision(7) << calculateRootMeanSquare() << "\n";
+	out << "\t" << left << setw(28) << "Standard Error of the Mean" << "= " << right << fixed << setprecision(7) << calculateStandardErrorOfMean() << "\n";
+	out << "\t" << left << setw(28) << "Skewness" << "= " << right << fixed << setprecision(7) << calculateSkewness() << "\n";
+	out << "\t" << left << setw(28) << "Kurtosis" << "= " << right << fixed << setprecision(7) << calculateKurtosis() << "\n";
+	out << "\t" << left << setw(28) << "Kurtosis Excess" << "= " << right << fixed << setprecision(7) << calculateKurtosisExcess() << "\n";
+	out << "\t" << left << setw(28) << "Coefficient of Variation" << "= " << right << fixed << setprecision(7) << calculateCoefficientOfVariation() << "\n";
+	out << "\t" << left << setw(28) << "Relative Standard Deviation" << "= " << right << fixed << setprecision(7) << calculateRelativeStandardDeviation() << "\n";
 
 	displayFrequencyTable(out);
 }
 
+// Precondition: filename is a valid text file name. The dataset is not empty.
+// Postcondition: Writes all statistical results to the file. Returns true if the file was created.
 bool Container::outputAllStatisticsToFile(const string& filename) const
 {
 	ofstream outputFile(filename);
