@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <string>
 
@@ -19,14 +20,14 @@ public:
 	void insertRandomValues(int count);
 	//void deleteValue(double value);  // I changed this to return a bool to indicate whether the value was found and deleted
 	//void deleteRange(double start, double end); // I changed this to return a bool to indicate whether the value was found and deleted
-	void deleteAll();
+	int deleteAll();
 	int getSize() const;
 	double* getData() const;
 	//void readFromFile(const string& filename);  // I changed this to return an int to indicate the number of values read from the file
 	void display() const;
 	void sortData();
 
-	bool deleteValue(double value, bool deleteAll = false);
+	int deleteValue(double value, bool deleteAll = false);
 
 	bool deleteRange(double start, double end);
 
@@ -70,7 +71,4 @@ public:
 	void displayAllStatistics(ostream& out = cout) const; //option Z
 	bool outputAllStatisticsToFile(const string& filename) const; //option Z
 };
-
-
-
 

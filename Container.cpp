@@ -3,27 +3,28 @@
 #include <iomanip> 
 #include <fstream>
 #include <cmath>
+#include <sstream>
 
 #include <algorithm> // For std::sort
 
 Container::Container()
 {
-	data = nullptr;
-	size = 0;
-	isSample = true; // Default to sample data
+    data = nullptr;
+    size = 0;
+    isSample = true; // Default to sample data
 }
 
 Container::~Container()
 {
-	delete[] data;
-	data = nullptr;
+    delete[] data;
+    data = nullptr;
 }
 
 // Precondition: None
 // Postcondition: Returns the size of the dataset
 int Container::getSize() const
 {
-	return size;
+    return size;
 }
 
 
@@ -31,21 +32,21 @@ int Container::getSize() const
 // Postcondition: Returns true if the dataset is a sample, false if it is a population
 bool Container::getIsSample() const
 {
-	return isSample;
+    return isSample;
 }
 
 // Precondition: getIsSample() must be called before this function to determine the current state of the dataset
 // Postcondition: Sets the dataset to be a sample or a population based on the input parameter
 void Container::setIsSample(bool sample)
 {
-	isSample = sample;
+    isSample = sample;
 }
 
 // Precondition: None
 // Postcondition: Returns a pointer to the dynamic array containing the dataset
 double* Container::getData() const
 {
-	return data;
+    return data;
 }
 
 // sorting the data in ascending order
@@ -89,12 +90,12 @@ void Container::insertValue(double value)
 // The size of the dataset increases by 'count'.
 void Container::insertRandomValues(int count)
 {
-	const int MAX_RAND = 101; // Maximum random value (exclusive)
+    const int MAX_RAND = 101; // Maximum random value (exclusive)
     for (int i = 0; i < count; ++i)
     {
-		// Generate a random value between 0 and 100
-		int randomInt = rand() % MAX_RAND; // Random integer between 0 and 100
-		double randomValue = static_cast<double>(randomInt);
+        // Generate a random value between 0 and 100
+        int randomInt = rand() % MAX_RAND; // Random integer between 0 and 100
+        double randomValue = static_cast<double>(randomInt);
         insertValue(randomValue);
     }
 }
@@ -102,76 +103,72 @@ void Container::insertRandomValues(int count)
 
 // Precondition: value is a double, deleteAll is a boolean
 // Postcondition: If deleteAll is true, all occurrences of value are removed from the dataset.
-bool Container::deleteValue(double value, bool deleteAll)
+int Container::deleteValue(double value, bool deleteAll)
 {
     int deleteCount = 0;
-	// Count how many occurrences of the value to delete exist in the dataset
+
+    // Count how many matching values will be removed.
     for (int i = 0; i < size; ++i)
     {
         if (data[i] == value)
         {
             ++deleteCount;
+
             if (!deleteAll)
             {
                 break;
             }
         }
     }
-	// If no occurrences of the value were found, return false
+
     if (deleteCount == 0)
     {
-        return false;
+        return 0;
     }
 
-    int newSize = size - deleteCount;
-	// If the new size is zero, delete the data array and set it to nullptr
+    const int newSize = size - deleteCount;
+
     if (newSize == 0)
     {
         delete[] data;
         data = nullptr;
         size = 0;
-        return true;
+        return deleteCount;
     }
 
-	double* newData = new double[newSize]; // Create a new array to hold the remaining values
-
+    double* newData = new double[newSize];
     int index = 0;
-    int deleted = 0;
-	// Copy over the values that are not equal to the value to delete
+    int removed = 0;
+
     for (int i = 0; i < size; ++i)
     {
-        if (data[i] == value)
+        if (data[i] == value && (deleteAll || removed == 0))
         {
-            if (deleteAll)
-            {
-                ++deleted;
-                continue;
-            }
-            if (deleted == 0)
-            {
-                ++deleted;
-                continue;
-            }
+            ++removed;
+            continue;
         }
-        if (index < newSize)
-        {
-            newData[index++] = data[i];
-        }
+
+        newData[index++] = data[i];
     }
 
     delete[] data;
     data = newData;
     size = newSize;
 
-    return true;
+    return deleteCount;
 }
 
 // Precondition: start and end are doubles, with start <= end
 // Postcondition: All values in the dataset that are within the range [start, end] are removed from the dataset.
 bool Container::deleteRange(double start, double end)
 {
+    if (end < start)
+    {
+        return false;
+    }
+
     int newSize = 0;
-	// Count how many values are outside the specified range
+    // Count how many values are outside the specified range
     for (int i = 0; i < size; ++i)
     {
         if (data[i] < start || data[i] > end)
@@ -179,12 +176,12 @@ bool Container::deleteRange(double start, double end)
             ++newSize;
         }
     }
-	// If the new size is the same as the current size, no values were deleted
+    // If the new size is the same as the current size, no values were deleted
     if (newSize == size)
     {
         return false;
     }
-	// If the new size is zero, delete the data array and set it to nullptr
+    // If the new size is zero, delete the data array and set it to nullptr
     if (newSize == 0)
     {
         delete[] data;
@@ -193,10 +190,10 @@ bool Container::deleteRange(double start, double end)
         return true;
     }
 
-	double* newData = new double[newSize]; // Create a new array to hold the remaining values
+    double* newData = new double[newSize]; // Create a new array to hold the remaining values
 
     int index = 0;
-	// Copy over the values that are outside the specified range
+    // Copy over the values that are outside the specified range
     for (int i = 0; i < size; ++i)
     {
         if (data[i] < start || data[i] > end)
@@ -220,11 +217,13 @@ bool Container::deleteRange(double start, double end)
 // Postcondition:
 // All values are removed from the dataset.
 // The dataset is empty, and size is set to 0.
-void Container::deleteAll()
+int Container::deleteAll()
 {
+    const int deletedCount = size;
     delete[] data;
     data = nullptr;
     size = 0;
+    return deletedCount;
 }
 
 // Precondition:
@@ -234,7 +233,7 @@ void Container::deleteAll()
 // 15 values per row.
 void Container::display() const
 {
-	const int MAX_VAL = 15; // Maximum number of values per row
+    const int MAX_VAL = 15; // Maximum number of values per row
 
     for (int i = 0; i < size; ++i)
     {
@@ -245,7 +244,7 @@ void Container::display() const
         }
 
         // Display value with guaranteed separation
-        cout << setw(3) << static_cast<int>(data[i]) << " ";
+        cout << defaultfloat << setprecision(15) << setw(8) << data[i] << " ";
 
         // New line after every 15 values
         if ((i + 1) % MAX_VAL == 0)
@@ -317,8 +316,8 @@ double Container::calculateMean() const
 // Postcondition: Returns the median of the dataset.
 double Container::calculateMedian() const
 {
-	const int TWO = 2; // Define a constant for the value 2
-	const double TWO_FRAC = 2.0; // Define a constant for the value 2.0
+    const int TWO = 2; // Define a constant for the value 2
+    const double TWO_FRAC = 2.0; // Define a constant for the value 2.0
     if (size == 0)
     {
         cout << "\n\tException Error: Dataset is empty.\n";
@@ -345,13 +344,13 @@ string Container::calculateMode() const
 {
     if (size == 0)
     {
-        cout << "\n\tException Error: Dataset is empty.\n";
-        return ""; // Return an empty string or handle the error as appropriate
+        return "";
     }
+
     int maxCount = 1;
     int currentCount = 1;
-    string modes = "";
-    bool hasMultipleModes = false;
+
+    // First pass: determine the highest frequency.
     for (int i = 1; i < size; ++i)
     {
         if (data[i] == data[i - 1])
@@ -363,29 +362,45 @@ string Container::calculateMode() const
             if (currentCount > maxCount)
             {
                 maxCount = currentCount;
-                modes = to_string(static_cast<int>(data[i - 1]));
-                hasMultipleModes = false;
-            }
-            else if (currentCount == maxCount)
-            {
-                modes += " " + to_string(static_cast<int>(data[i - 1]));
-                hasMultipleModes = true;
             }
             currentCount = 1;
         }
     }
-    // Check the last value
+
     if (currentCount > maxCount)
     {
-        modes = to_string(static_cast<int>(data[size - 1]));
-        hasMultipleModes = false;
+        maxCount = currentCount;
     }
-    else if (currentCount == maxCount)
+
+    // Second pass: collect every value having the maximum frequency.
+    ostringstream out;
+    out << defaultfloat << setprecision(15);
+
+    currentCount = 1;
+    bool first = true;
+
+    for (int i = 1; i <= size; ++i)
     {
-        modes += " " + to_string(static_cast<int>(data[size - 1]));
-        hasMultipleModes = true;
+        if (i < size && data[i] == data[i - 1])
+        {
+            ++currentCount;
+        }
+        else
+        {
+            if (currentCount == maxCount)
+            {
+                if (!first)
+                {
+                    out << " ";
+                }
+                out << data[i - 1];
+                first = false;
+            }
+            currentCount = 1;
+        }
     }
-    return modes;
+
+    return out.str();
 }
 
 // Precondition: The dataset is not empty.
@@ -417,7 +432,7 @@ double Container::calculateStandardDeviation() const
 double Container::calculateSkewness() const
 {
     //validate that size is greater than 2 for sample skewness calculation
-    if (isSample && size < 3)
+    if (size < 3)
     {
         return NAN; // Return NaN (Not a Number) if sample size is less than 3
     }
@@ -425,10 +440,10 @@ double Container::calculateSkewness() const
     double stdDev = calculateStandardDeviation();
     double sumCubedDifferences = 0.0;
 
-	//validate that stdDev is not zero to avoid division by zero
+    //validate that stdDev is not zero to avoid division by zero
     if (stdDev == 0.0)
     {
-		return NAN; // Return NaN (Not a Number) if standard deviation is zero
+        return NAN; // Return NaN (Not a Number) if standard deviation is zero
     }
 
 
@@ -442,12 +457,12 @@ double Container::calculateSkewness() const
     if (isSample)
     {
         //skewness = (size * (size - 1) * (size - 2)) * sumCubedDifferences / ((size - 1) * (size - 1) * (size - 1) * stdDev * stdDev * stdDev);
-		skewness = (static_cast<double>(size) / ((size - 1) * (size - 2))) * (sumCubedDifferences / pow(stdDev, 3));
+        skewness = (static_cast<double>(size) / ((size - 1) * (size - 2))) * (sumCubedDifferences / pow(stdDev, 3));
     }
     else
     {
-       // skewness = sumCubedDifferences / (size * stdDev * stdDev * stdDev);
-		skewness = (sumCubedDifferences / (size * pow(stdDev, 3)));
+        // skewness = sumCubedDifferences / (size * stdDev * stdDev * stdDev);
+        skewness = (sumCubedDifferences / (size * pow(stdDev, 3)));
     }
     return skewness;
 }
@@ -475,13 +490,13 @@ double Container::calculateKurtosis() const
     {
         double difference = data[i] - mean;
         //sumFourthDifferences += difference * difference * difference * difference;
-		sumFourthDifferences += pow(difference, 4);
+        sumFourthDifferences += pow(difference, 4);
     }
     double kurtosis;
     if (isSample)
     {
-   
-		kurtosis = ((static_cast<double>(size) * (size + 1) / ((size - 1) * (size - 2) * (size - 3))) * (sumFourthDifferences / pow(stdDev, 4)));
+
+        kurtosis = ((static_cast<double>(size) * (size + 1) / ((size - 1) * (size - 2) * (size - 3))) * (sumFourthDifferences / pow(stdDev, 4)));
     }
     else
     {
@@ -495,17 +510,17 @@ double Container::calculateKurtosis() const
 // or if the standard deviation is zero.
 double Container::calculateKurtosisExcess() const
 {
-	//validate sample size for kurtosis excess calculation
+    //validate sample size for kurtosis excess calculation
     if (isSample && size < 4)
     {
         return NAN; // Return NaN (Not a Number) if sample size is less than 4
     }
 
-	double mean = calculateMean();
+    double mean = calculateMean();
     double stdDev = calculateStandardDeviation();
-	double sumFourthDifferences = 0.0;
+    double sumFourthDifferences = 0.0;
 
-	//validate that stdDev is not zero to avoid division by zero
+    //validate that stdDev is not zero to avoid division by zero
     if (stdDev == 0.0)
     {
         return NAN; // Return NaN (Not a Number) if standard deviation is zero
@@ -514,18 +529,18 @@ double Container::calculateKurtosisExcess() const
     {
         double difference = data[i] - mean;
         sumFourthDifferences += pow(difference, 4);
-	}
+    }
     double kurtosisExcess;
     if (isSample)
     {
-        kurtosisExcess = (static_cast<double>(size) * (size + 1) / ((size - 1) * (size - 2) * (size - 3))) * (sumFourthDifferences / pow(stdDev, 4)) - 
+        kurtosisExcess = (static_cast<double>(size) * (size + 1) / ((size - 1) * (size - 2) * (size - 3))) * (sumFourthDifferences / pow(stdDev, 4)) -
             (3.0 * (size - 1) * (size - 1) / ((size - 2) * (size - 3)));
     }
     else
     {
         kurtosisExcess = (sumFourthDifferences / (size * pow(stdDev, 4))) - 3.0;
     }
-	return kurtosisExcess;
+    return kurtosisExcess;
 
 }
 
@@ -684,25 +699,34 @@ double Container::calculateInterquartileRange(double q1, double q3) const
 //check if the size is less than 4, then outliers are unknown, otherwise, calculate the lower and upper fences and display the outliers if any are found.
 void Container::calculateOutliers(double q1, double q3, double interquartileRange) const
 {
-    // At least 4 values are required to determine outliers
+    cout << "\n\t" << left << setw(28) << "Outliers" << "= ";
+
+    // Match the reference executable: with fewer than four values,
+    // Q1/Q3 are unknown and all data values are displayed here.
     if (size < 4)
     {
-        cout << "\n\tOutliers" << setw(30) << "= unknown\n";
+        cout << defaultfloat << setprecision(15);
+        for (int i = 0; i < size; ++i)
+        {
+            if (i > 0) cout << " ";
+            cout << data[i];
+        }
+        cout << "\n\n";
         return;
     }
 
     double lowerFence = q1 - (1.5 * interquartileRange);
     double upperFence = q3 + (1.5 * interquartileRange);
-
     bool found = false;
 
-    cout << "\n\tOutliers" << setw(30) << "= ";
+    cout << defaultfloat << setprecision(15);
 
     for (int i = 0; i < size; ++i)
     {
         if (data[i] < lowerFence || data[i] > upperFence)
         {
-            cout << fixed << setprecision(0) << data[i] << " ";
+            if (found) cout << " ";
+            cout << data[i];
             found = true;
         }
     }
@@ -712,7 +736,7 @@ void Container::calculateOutliers(double q1, double q3, double interquartileRang
         cout << "none";
     }
 
-    cout << "\n";
+    cout << "\n\n";
 }
 
 //option O
@@ -857,44 +881,41 @@ double Container::calculateRelativeStandardDeviation() const
 // Postcondition: Returns a string containing the outliers in the dataset, separated by spaces. If no outliers are found, returns "none".
 string Container::calculateOutliersString() const
 {
+    ostringstream out;
+    out << defaultfloat << setprecision(15);
+
+    // Match the reference executable for datasets smaller than four values.
+    if (size < 4)
+    {
+        for (int i = 0; i < size; ++i)
+        {
+            if (i > 0) out << " ";
+            out << data[i];
+        }
+        return out.str();
+    }
+
     double q1 = 0.0;
     double q2 = 0.0;
     double q3 = 0.0;
-
     calculateQuartiles(q1, q2, q3);
 
     double interquartileRange = calculateInterquartileRange(q1, q3);
     double lowerFence = q1 - (1.5 * interquartileRange);
     double upperFence = q3 + (1.5 * interquartileRange);
-
-    string outliers = "";
-    double lastOutlier = -1.0;
-    bool foundOutlier = false;
+    bool found = false;
 
     for (int i = 0; i < size; ++i)
     {
         if (data[i] < lowerFence || data[i] > upperFence)
         {
-            if (!foundOutlier || data[i] != lastOutlier)
-            {
-                if (!outliers.empty())
-                {
-                    outliers += " ";
-                }
-
-                outliers += to_string(static_cast<int>(data[i]));
-                lastOutlier = data[i];
-                foundOutlier = true;
-            }
+            if (found) out << " ";
+            out << data[i];
+            found = true;
         }
     }
 
-    if (!foundOutlier)
-    {
-        return "none";
-    }
-
-    return outliers;
+    return found ? out.str() : "none";
 }
 
 //option X
@@ -917,7 +938,7 @@ void Container::displayFrequencyTable(ostream& out) const
 
         double frequencyPercent = (static_cast<double>(frequency) / size) * 100.0;
 
-        out << "\t" << setw(5) << right << static_cast<int>(value)
+        out << "\t" << setw(8) << right << defaultfloat << setprecision(15) << value
             << setw(10) << right << frequency
             << setw(12) << right << fixed << setprecision(2) << frequencyPercent << "\n";
 
@@ -943,11 +964,11 @@ void Container::displayAllStatistics(ostream& out) const
     double kurtosisExcess = calculateKurtosisExcess();
 
     out << "\n";
-    out << "\t" << left << setw(28) << "Minimum" << "= " << static_cast<int>(data[0]) << "\n";
-    out << "\t" << left << setw(28) << "Maximum" << "= " << static_cast<int>(data[size - 1]) << "\n";
-    out << "\t" << left << setw(28) << "Range" << "= " << static_cast<int>(data[size - 1] - data[0]) << "\n";
+    out << "\t" << left << setw(28) << "Minimum" << "= " << defaultfloat << setprecision(15) << data[0] << "\n";
+    out << "\t" << left << setw(28) << "Maximum" << "= " << defaultfloat << setprecision(15) << data[size - 1] << "\n";
+    out << "\t" << left << setw(28) << "Range" << "= " << defaultfloat << setprecision(15) << (data[size - 1] - data[0]) << "\n";
     out << "\t" << left << setw(28) << "Size" << "= " << size << "\n";
-    out << "\t" << left << setw(28) << "Sum" << "= " << static_cast<int>(calculateSum()) << "\n";
+    out << "\t" << left << setw(28) << "Sum" << "= " << defaultfloat << setprecision(15) << calculateSum() << "\n";
     out << "\t" << left << setw(28) << "Mean" << "= " << fixed << setprecision(2) << calculateMean() << "\n";
     out << "\t" << left << setw(28) << "Median" << "= " << fixed << setprecision(2) << calculateMedian() << "\n";
     out << "\t" << left << setw(28) << "Mode(s)" << "= " << calculateMode() << "\n";
@@ -979,7 +1000,7 @@ void Container::displayAllStatistics(ostream& out) const
     }
     else
     {
-        out << fixed << setprecision(1) << interquartileRange << "\n";
+        out << fixed << setprecision(7) << interquartileRange << "\n";
     }
     // OUTLIERS
     out << "\t" << left << setw(28) << "Outliers" << "= ";
@@ -990,7 +1011,7 @@ void Container::displayAllStatistics(ostream& out) const
         // display all dataset values
         for (int i = 0; i < size; ++i)
         {
-            out << static_cast<int>(data[i]) << " ";
+            out << defaultfloat << setprecision(15) << data[i] << " ";
         }
 
         out << "\n";
