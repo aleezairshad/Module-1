@@ -29,6 +29,11 @@ int main()
 
     system("pause");
 
+    double q1 = 0;
+    double q2 = 0;
+    double q3 = 0;
+    double iqr = 0;
+
     bool running = true;
     while (running)
     {
@@ -241,19 +246,68 @@ int main()
             
 
         case 'A':
+        {
+            try
+            {
+                double minimum = dataset.calculateMinimum();
+
+                cout << "\n\t" << left << setw(28) << "Minimum" << "= " << right << static_cast<int>(minimum) << "\n\n\n";
+            }
+            catch (const char* message)
+            {
+                cout << message << "\n\n\n";
+            }
+
+            system("pause");
+        }
             
             break;
         case 'B':
+		{
+            try
+            {
+                double maximum = dataset.calculateMaximum();
+                cout << "\n\t" << left << setw(28) << "Maximum" << "= " << right << static_cast<int>(maximum) << "\n\n\n";
+            }
+            catch (const char* message)
+            {
+                cout << message << "\n\n\n";
+			}
+			system("pause");
+            }
    
             break;
         case 'C':
+        {
+            try
+            {
+                double range = dataset.calculateRange();
+                cout << "\n\t" << left << setw(28) << "Range" << "= " << right << static_cast<int>(range) << "\n\n\n";
+            }
+            catch (const char* message)
+            {
+                cout << message << "\n\n\n";
+            }
+            system("pause");
+        }
 
             break;
         case 'D':
+        {
+            cout << "\n\t" << left << setw(28) << "Size" << "= " << right << dataset.getSize() << "\n\n\n";
+
+            system("pause");
+			break;
+        }
 
             break;
         case 'E':
-            cout << "\tFind Sum" << "\n";
+        {
+            double sumValue = dataset.calculateSum(); // Calculate the sum of the dataset
+            cout << "\n\tSum " << setw(25) << "= " << sumValue << "\n\n";
+            system("pause");
+        }
+
             break;
         case 'F':
         {
@@ -290,23 +344,112 @@ int main()
 
             break;
         }
-		case 'J':
-			break;
+        case 'J':
+        {
+            try
+            {
+                double variance = dataset.calculateVariance();
+
+                cout << "\n\tVariance" << setw(30) << "= " << right << fixed << setprecision(7) << variance << "\n\n";
+            }
+            catch (const char* message)
+            {
+                cout << message << "\n";
+            }
+
+            system("pause");
+
+            break;
+        }
 		case 'K':
+        {
+            try
+            {
+                double midrange = dataset.calculateMidrange();
+
+                cout << "\n\tMidrange" << setw(30) << "= " << right << fixed << setprecision(7) << midrange << "\n\n";
+            }
+            catch (const char* message)
+            {
+                cout << message << "\n";
+            }
+
+            system("pause");
+        }
 			break;
-		case 'L':
-			break;
+        case 'L':
+        {
+            dataset.calculateQuartiles(q1, q2, q3);
+
+            if (dataset.getSize() <= 3)
+            {
+                cout << "\n\tQuartiles" << setw(30) << right << "Quartiles:";
+                cout << "\n\t" << setw(36) << right << "Q1 --> " << "unknown";
+                cout << "\n\t" << setw(36) << right << "Q2 --> " << q2;
+                cout << "\n\t" << setw(36) << right << "Q3 --> " << "unknown\n";
+            }
+            else
+            {
+                cout << "\n\tQuartiles" << setw(30) << right << "Quartiles:";
+                cout << "\n\t" << setw(36) << right << "Q1 --> " << q1;
+                cout << "\n\t" << setw(36) << right << "Q2 --> " << q2;
+                cout << "\n\t" << setw(36) << right << "Q3 --> " << q3 << "\n";
+            }
+
+			system("pause");
+            break;
+        }
 		case 'M':
+        {
+            if (dataset.getSize() < 4)
+            {
+                cout << "\n\tInterquartile Range" << setw(30) << "= " << right << "unknown\n\n";
+            }
+            else
+            {
+                dataset.calculateQuartiles(q1, q2, q3); // prevent data change affect the calculation (so I recalculate)
+
+                iqr = dataset.calculateInterquartileRange(q1, q3);
+                cout << "\n\tInterquartile Range" << setw(30) << "= " << right << fixed << setprecision(7) << iqr << "\n\n";
+            }
+			system("pause");
+        }
 			break;
 		case 'N':
+        {
+            dataset.calculateQuartiles(q1, q2, q3); // prevent data change affect the calculation (so I recalculate)
+            iqr = dataset.calculateInterquartileRange(q1, q3); // prevent data change affect the calculation (so I recalculate)
+            dataset.calculateOutliers(q1, q3, iqr);
+            system("pause");
+        }
 			break;
 		case 'O':
+        {
+            double sumOfSquares = dataset.calculateSumOfSquares();
+            cout << "\n\tSum of Squares" << setw(30) << "= " << right << fixed << setprecision(2) << sumOfSquares << "\n\n";
+            system("pause");
+        }
 			break;
 		case 'P':
+        {
+            double meanAbsDeviation = dataset.calculateMeanAbsoluteDeviation();
+            cout << "\n\tMean Absolute Deviation" << setw(30) << "= " << right << fixed << setprecision(2) << meanAbsDeviation << "\n\n";
+            system("pause");
+        }
 			break;
 		case 'Q':
+        {
+            double rootMeanSquare = dataset.calculateRootMeanSquare();
+            cout << "\n\tRoot Mean Square" << setw(30) << "= " << right << fixed << setprecision(7) << rootMeanSquare << "\n\n";
+            system("pause");
+        }
 			break;
 		case 'R':
+        {
+            double stdErrorOfMean = dataset.calculateStandardErrorOfMean();
+            cout << "\n\tStandard Error of the Mean" << setw(4) << "= " << right << fixed << setprecision(7) << stdErrorOfMean << "\n\n";
+            system("pause");
+        }
 			break;
         case 'S':
         {
@@ -370,18 +513,52 @@ int main()
             break;
         }
 		case 'W':
+        {
+            try
+            {
+                double relativeStandardDeviation = dataset.calculateRelativeStandardDeviation();
+
+                cout << "\n\t" << left << setw(28) << "Relative Standard Deviation" << "= " << right << fixed << setprecision(7) << relativeStandardDeviation << "\n\n\n";
+            }
+            catch (const char* message)
+            {
+                cout << message << "\n\n\n";
+            }
+
+            system("pause");
+        }
 			break;
+
 		case 'X':
+			dataset.displayFrequencyTable(); // Display the frequency table of the dataset
+			system("pause");
 			break;
+
 		case 'Y':
+			dataset.displayAllStatistics(); // Display all statistics of the dataset
+			cout << "\n\n";
+			system("pause");
 			break;
 		case 'Z':
+        {
+            string filename = inputString("\n\tSpecify a text file to save results: ", false);
+
+            if (dataset.outputAllStatisticsToFile(filename))
+            {
+                cout << "\n\tCONFIRMATION: File, " << filename << ", has been generated.\n\n\n";
+            }
+            else
+            {
+                cout << "\n\tERROR: File, " << filename << ", could not be generated.\n\n\n";
+            }
+
+            system("pause");
+        }
 			break;
         default:
             cout << "\tInvalid option. Please try again." << "\n";
         }
     }
-
 
     return EXIT_SUCCESS;
 }  
