@@ -4,30 +4,6 @@
 
 using namespace std;
 
-/*
-* Class check list:
-* private: 
-*	double* data
-*	int size
-*	bool isSample
-* public:
-*	constructor
-*	destructor
-*	setIsSample (1)
-*	getIsSample (1)
-*	insertValue (2)
-*	insertRandomValue (2)
-*	readFromFile (2)
-*	deleteValue (3)
-*	deleteRange (3)
-*	deleteAll (3)
-*	getSize (sub-func for dynamic array shrink and expand)
-*	getData (to display current index in array)
-*	display (for menu)
-*	sortData (ascending order)
-*/
-
-
 class Container
 {
 private:
@@ -35,45 +11,65 @@ private:
 	int size;
 	bool isSample;
 public:
-	//Hany's part
 	Container();
 	~Container();
 	void setIsSample(bool sample);
 	bool getIsSample() const;
 	void insertValue(double value);
 	void insertRandomValues(int count);
-	//void deleteValue(double value);
-	bool deleteValue(double value, bool deleteAll = false); //update 1 made by Hany
-	//void deleteRange(double start, double end);
-	bool deleteRange(double start, double end); //update 1 made by Hany
-	void deleteAll();
+	//void deleteValue(double value);  // I changed this to return a bool to indicate whether the value was found and deleted
+	//void deleteRange(double start, double end); // I changed this to return a bool to indicate whether the value was found and deleted
+	int deleteAll();
 	int getSize() const;
 	double* getData() const;
-	int readFromFile(const string& filename);
+	//void readFromFile(const string& filename);  // I changed this to return an int to indicate the number of values read from the file
 	void display() const;
 	void sortData();
 
-	//update 1 made by Hany
-	double calculateMean() const;
-	double calculateMedian() const;
-	string calculateMode() const;
-	double calculateStandardDeviation() const; //function for calculating the standard deviation of the dataset
-	double calculateSkewness() const; //function for calculating the skewness of the dataset
-	double calculateKurtosis() const; //function for calculating the kurtosis of the dataset
-	double calculateKurtosisExcess() const; //function for calculating the kurtosis excess of the dataset
-	double calculateCoefficientOfVariation() const;
+	int deleteValue(double value, bool deleteAll = false);
+
+	bool deleteRange(double start, double end);
+
+	int readFromFile(const string& filename);
+
+	//option F-I AND S-V
+	//function for calculating the mean of the dataset
+	double calculateMean() const; //option F
+	//function for calculating the median of the dataset 
+	double calculateMedian() const; //option G
+	//function for calculating the mode of the dataset
+	string calculateMode() const;//option H
+	double calculateStandardDeviation() const; //option I function for calculating the standard deviation of the dataset
+	double calculateSkewness() const; // option S function for calculating the skewness of the dataset
+	double calculateKurtosis() const; // option T function for calculating the kurtosis of the dataset
+	double calculateKurtosisExcess() const; // option U function for calculating the kurtosis excess of the dataset
+	double calculateCoefficientOfVariation() const; //option V function for calculating the coefficient of variation of the dataset
+
 
 	//Thanh's part from J-R
-	double calculateVariance() const;
-	double calculateMidrange() const;
-	void calculateQuartiles(double& q1, double& q2, double& q3) const;
-	double calculateInterquartileRange(double q1, double q3) const;
-	void calculateOutliers(double q1, double q3, double interquartileRange) const;
-	double calculateSumOfSquares() const;
-	double calculateMeanAbsoluteDeviation() const;
-	double calculateRootMeanSquare() const;
-	double calculateStandardErrorOfMean() const;
+	double calculateVariance() const; //option J
+	double calculateMidrange() const; //option K
+	void calculateQuartiles(double& q1, double& q2, double& q3) const; //option L
+	double calculateInterquartileRange(double q1, double q3) const; //option M
+	double calculateSumOfSquares() const; //option O
+	double calculateMeanAbsoluteDeviation() const; //option P
+	double calculateRootMeanSquare() const; //option Q
+	double calculateStandardErrorOfMean() const; //option R
 
+	//Aleeza's part A-E
+	double calculateMinimum() const; //option A
+	double calculateMaximum() const; //option B
+	double calculateRange() const; //option C
+	double calculateSum() const; //option E
+
+	//Aleeza's part W-Z
+	double calculateRelativeStandardDeviation() const; //option W
+	string calculateOutliersString() const; //option X
+	void displayFrequencyTable(ostream& out = cout) const; //option Y
+	void displayAllStatistics(ostream& out = cout) const; //option Z
+	bool outputAllStatisticsToFile(const string& filename) const; //option Z
 };
+
+
 
 
