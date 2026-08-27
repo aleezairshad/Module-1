@@ -2,16 +2,15 @@
 #include <cstdlib> 
 #include <iomanip> 
 #include <fstream>
+#include <cmath>
 
-
-#include <algorithm> // For std::sort
-
+#include <algorithm> 
 
 Container::Container()
 {
     data = nullptr;
     size = 0;
-    isSample = true; // Default to sample data
+    isSample = true;
 }
 
 Container::~Container()
@@ -103,10 +102,10 @@ void Container::insertRandomValues(int count)
 
 // Precondition: value is a double, deleteAll is a boolean
 // Postcondition: If deleteAll is true, all occurrences of value are removed from the dataset.
-bool Container::deleteValue(double value, bool deleteAll)
+int Container::deleteValue(double value, bool deleteAll)
 {
     int deleteCount = 0;
-    // Count how many occurrences of the value to delete exist in the dataset
+
     for (int i = 0; i < size; ++i)
     {
         if (data[i] == value)
@@ -118,27 +117,26 @@ bool Container::deleteValue(double value, bool deleteAll)
             }
         }
     }
-    // If no occurrences of the value were found, return false
     if (deleteCount == 0)
     {
-        return false;
+        return 0;
     }
 
     int newSize = size - deleteCount;
-    // If the new size is zero, delete the data array and set it to nullptr
+
     if (newSize == 0)
     {
         delete[] data;
         data = nullptr;
         size = 0;
-        return true;
+        return deleteCount;
     }
 
-    double* newData = new double[newSize]; // Create a new array to hold the remaining values
+    double* newData = new double[newSize];
 
     int index = 0;
     int deleted = 0;
-    // Copy over the values that are not equal to the value to delete
+
     for (int i = 0; i < size; ++i)
     {
         if (data[i] == value)
@@ -164,7 +162,7 @@ bool Container::deleteValue(double value, bool deleteAll)
     data = newData;
     size = newSize;
 
-    return true;
+    return deleteCount;
 }
 
 // Precondition: start and end are doubles, with start <= end
@@ -218,20 +216,23 @@ bool Container::deleteRange(double start, double end)
 
 // Precondition:
 // The dataset is sorted in ascending order.
-//
 // Postcondition:
 // All values are removed from the dataset.
 // The dataset is empty, and size is set to 0.
-void Container::deleteAll()
+// Returns the number of values that were removed.
+int Container::deleteAll()
 {
+    int count = size;
+
     delete[] data;
     data = nullptr;
     size = 0;
+
+    return count;
 }
 
 // Precondition:
 // The dataset is sorted in ascending order.
-//
 // Postcondition:
 // Displays the dataset in ascending order,
 // 15 values per row.
@@ -266,7 +267,6 @@ void Container::display() const
 
 // Precondition:
 // filename contains the name of a text file.
-//
 // Postcondition:
 // Numeric values from the file are inserted into the dataset.
 // The dataset remains sorted in ascending order.
@@ -306,7 +306,7 @@ double Container::calculateMean() const
     if (size == 0)
     {
         cout << "\n\tException Error: Dataset is empty.\n";
-        return 0.0; // Return 0 or handle the error as appropriate
+        return 0.0;
     }
     double sum = 0.0;
     for (int i = 0; i < size; ++i)
@@ -326,7 +326,7 @@ double Container::calculateMedian() const
     if (size == 0)
     {
         cout << "\n\tException Error: Dataset is empty.\n";
-        return 0.0; // Return 0 or handle the error as appropriate
+        return 0.0;
     }
 
     if (size % TWO == 0)
@@ -549,10 +549,16 @@ double Container::calculateCoefficientOfVariation() const
 }
 
 
+
+
 //Thanh's part J-R
-//Precondition: dataset cannot be empty, if the dataset is a sample, it must contain at least 2 element(s)/item(s)
-//Postcondition: Return variance of dataset
-double Container::calculateVariance() const //not yet checked for if the total item = 1, the sample formula will cause crash (can't divide by 0 because 1-1 = 0)
+//option J
+//Precondition: The dataset is not empty.
+//Postcondition: Returns the variance of the dataset. If the dataset is a sample, uses n-1 in the denominator; if it's a population, uses n.
+//option J
+// Precondition: The dataset is not empty.
+// Postcondition: Returns the variance of the dataset. Uses n-1 in the denominator if the dataset is a sample (throws an exception if a sample has fewer than 2 values), or n if it is a population.
+double Container::calculateVariance() const
 {
     if (getSize() == 0)
     {
@@ -567,7 +573,7 @@ double Container::calculateVariance() const //not yet checked for if the total i
     double sumOfSquaredDeviations = 0;
     double mean = 0;
     int totalItems = getSize();
-    
+
     mean = calculateMean();
 
     for (int i = 0; i < totalItems; i++)
@@ -585,8 +591,9 @@ double Container::calculateVariance() const //not yet checked for if the total i
     }
 }
 
-//Precondition: dataset cannot be empty and must be sorted
-//Postcondition: return the midrange value of dataset
+//option K
+//Precondition: The dataset is not empty.
+//Postcondition: Returns the midrange of the dataset, which is the average of the minimum and maximum values.
 double Container::calculateMidrange() const // empty array will crash
 {
     if (getSize() == 0)
@@ -597,9 +604,10 @@ double Container::calculateMidrange() const // empty array will crash
     return (data[getSize() - 1] + data[0]) / 2.0;
 }
 
-//Precondition: dataset must contain at least 2 element(s)/item(s) and must be sorted
-//Postcondition: Stores the calculated quartile in q1,q2,q3 based on number of elements in dataset
-void Container::calculateQuartiles(double &q1, double &q2, double &q3) const
+//option L
+//Precondition: The dataset is not empty.
+//Postcondition: Calculates the first quartile (Q1), second quartile (Q2, which is the median), and third quartile (Q3) of the dataset.
+void Container::calculateQuartiles(double& q1, double& q2, double& q3) const
 {
     if (size == 0)
     {
@@ -644,7 +652,7 @@ void Container::calculateQuartiles(double &q1, double &q2, double &q3) const
         q2 = data[middleIndex];
 
         int halfSize = totalSize / 2;
-       
+
         if (halfSize % 2 == 0)
         {
             int middleIndexQ1 = halfSize / 2;
@@ -669,38 +677,17 @@ void Container::calculateQuartiles(double &q1, double &q2, double &q3) const
     }
 }
 
-//Precondition: q1 and q3 must contain valid values
-//Postcondition: return the value of interquartile range of dataset
+//option M
+//Precondition: The dataset is not empty.
+//Postcondition: Returns the interquartile range (IQR) of the dataset, which is the difference between the third quartile (Q3) and the first quartile (Q1).
 double Container::calculateInterquartileRange(double q1, double q3) const
 {
     return q3 - q1;
 }
 
-//Precondition: q1, q3, interQuartileRange (IQR) must contain valid values
-//Postcondition: display all outliers in dataset and display none if there's no outlier
-void Container::calculateOutliers(double q1, double q3, double interquartileRange) const
-{
-    bool found = false;
-    double lowerFence = q1 - (1.5 * interquartileRange);
-    double upperFence = q3 + (1.5 * interquartileRange);
-
-    for (int i = 0; i < getSize(); i++)
-    {
-        if (data[i] < lowerFence || data[i] > upperFence)
-        {
-            cout << "\n\tOutliers" << setw(30) << "= " << right << fixed << setprecision(7) << data[i] << "\n";
-            found = true;
-        }
-    }
-
-    if (!found)
-    {
-        cout << "\n\tOutliers" << setw(30) << "= " << right << fixed << setprecision(7) << "none\n";
-    }
-}
-
-//Precondition: dataset cannot be empty 
-//Postcondition: return the sum of square deviation from the mean (calculateMean)
+//option O
+//Precondition: The dataset is not empty.
+//Postcondition: Returns the sum of squares of the dataset, which is the sum of the squared differences between each value and the mean.
 double Container::calculateSumOfSquares() const
 {
     double mean = calculateMean();
@@ -714,8 +701,9 @@ double Container::calculateSumOfSquares() const
     return sumOfSquares;
 }
 
-//Precondition: dataset cannot be empty
-//Postcondition: return the mean absolute deviation of dataset
+//option P
+//Precondition: The dataset is not empty.
+//Postcondition: Returns the mean absolute deviation of the dataset, which is the average of the absolute differences between each value and the mean.
 double Container::calculateMeanAbsoluteDeviation() const
 {
     double mean = calculateMean();
@@ -729,8 +717,9 @@ double Container::calculateMeanAbsoluteDeviation() const
     return totalDeviation / getSize();
 }
 
-//Precondition: dataset cannot be empty
-//Postcondition: return the root mean square of dataset
+//option Q
+//Precondition: The dataset is not empty.
+//Postcondition: Returns the root mean square (RMS) of the dataset, which is the square root of the average of the squared values.
 double Container::calculateRootMeanSquare() const
 {
     double sumOfSquare = 0.0;
@@ -745,8 +734,9 @@ double Container::calculateRootMeanSquare() const
     return sqrt(meanOfSquares);
 }
 
-//Precondition: dataset cannot be empty, if dataset is a sample, must contain at least 2 element(s)/item(s)
-//Postcondition: return the standard error of mean of dataset
+//option R
+//Precondition: The dataset is not empty.
+//Postcondition: Returns the standard error of the mean (SEM) of the dataset, which is the standard deviation divided by the square root of the sample size.
 double Container::calculateStandardErrorOfMean() const
 {
     double stdDeviation = calculateStandardDeviation();
@@ -754,4 +744,288 @@ double Container::calculateStandardErrorOfMean() const
     double rootedSize = sqrt(getSize());
 
     return stdDeviation / rootedSize;
+}
+
+//Aleeza's part A-E
+// option A
+// Precondition: The dataset is sorted in ascending order.
+// Postcondition: Returns the smallest value. Throws if the dataset is empty.
+double Container::calculateMinimum() const
+{
+    if (getSize() == 0)
+    {
+        throw "\n\tException Error: Dataset is empty.";
+    }
+
+    return data[0];
+}
+
+// option B
+// Precondition: The dataset is sorted in ascending order.
+// Postcondition: Returns the largest value. Throws if the dataset is empty.
+double Container::calculateMaximum() const
+{
+    if (getSize() == 0)
+    {
+        throw "\n\tException Error: Dataset is empty.";
+    }
+
+    return data[getSize() - 1];
+}
+
+// option C
+// Precondition: The dataset is sorted in ascending order.
+// Postcondition: Returns maximum minus minimum. Throws if the dataset is empty.
+double Container::calculateRange() const
+{
+    if (getSize() == 0)
+    {
+        throw "\n\tException Error: Dataset is empty.";
+    }
+
+    return data[getSize() - 1] - data[0];
+}
+
+// option E
+// Precondition: The dataset is not empty.
+// Postcondition: Returns the sum of all values. Returns 0 if the dataset is empty.
+double Container::calculateSum() const
+{
+    double sum = 0.0;
+
+    for (int i = 0; i < size; ++i)
+    {
+        sum += data[i];
+    }
+
+    return sum;
+}
+
+////Aleeza's part W-Z
+// option W
+// Precondition: The dataset is not empty.
+// Postcondition: Returns the relative standard deviation (RSD) of the dataset, which is the coefficient of variation multiplied by 100. Throws if the dataset is empty or if the mean is zero.
+double Container::calculateRelativeStandardDeviation() const
+{
+    if (getSize() == 0)
+    {
+        throw "\n\tException Error: Dataset is empty.";
+    }
+
+    double coefficientOfVariation = calculateCoefficientOfVariation();
+
+    if (isnan(coefficientOfVariation))
+    {
+        throw "\n\tException Error: Relative standard deviation is undefined.";
+    }
+
+    return coefficientOfVariation * 100.0;
+}
+
+//FUNCTION TO CALCULATE OUTLIERS AND RETURN AS STRING
+// Precondition: The dataset is not empty.
+// Postcondition: Returns a string containing the outliers in the dataset, separated by spaces. If no outliers are found, returns "none".
+string Container::calculateOutliersString() const
+{
+    if (size < 4)
+    {
+        string values = "";
+
+        for (int i = 0; i < size; ++i)
+        {
+            if (!values.empty())
+            {
+                values += " ";
+            }
+
+            values += to_string(static_cast<int>(data[i]));
+        }
+
+        return values;
+    }
+
+    double q1 = 0.0;
+    double q2 = 0.0;
+    double q3 = 0.0;
+
+    calculateQuartiles(q1, q2, q3);
+
+    double interquartileRange = calculateInterquartileRange(q1, q3);
+    double lowerFence = q1 - (1.5 * interquartileRange);
+    double upperFence = q3 + (1.5 * interquartileRange);
+
+    string outliers = "";
+    double lastOutlier = -1.0;
+    bool foundOutlier = false;
+
+    for (int i = 0; i < size; ++i)
+    {
+        if (data[i] < lowerFence || data[i] > upperFence)
+        {
+            if (!foundOutlier || data[i] != lastOutlier)
+            {
+                if (!outliers.empty())
+                {
+                    outliers += " ";
+                }
+
+                outliers += to_string(static_cast<int>(data[i]));
+                lastOutlier = data[i];
+                foundOutlier = true;
+            }
+        }
+    }
+
+    if (!foundOutlier)
+    {
+        return "none";
+    }
+
+    return outliers;
+}
+
+//option X
+// Precondition: The dataset is not empty.
+// Postcondition: Displays the frequency table of the dataset, showing each unique value, its frequency, and its frequency percentage.
+void Container::displayFrequencyTable(ostream& out) const
+{
+    out << "\n\tFrequency Table\n\n";
+    out << "\tValue Frequency Frequency %\n";
+
+    for (int i = 0; i < size;)
+    {
+        double value = data[i];
+        int frequency = 1;
+
+        while (i + frequency < size && data[i + frequency] == value)
+        {
+            ++frequency;
+        }
+
+        double frequencyPercent = (static_cast<double>(frequency) / size) * 100.0;
+
+        out << "\t" << setw(5) << right << static_cast<int>(value)
+            << setw(10) << right << frequency
+            << setw(12) << right << fixed << setprecision(2) << frequencyPercent << "\n";
+
+        i += frequency;
+    }
+}
+
+//option Y
+// Precondition: The dataset is not empty.
+// Postcondition: Displays all the statistics of the dataset, including minimum, maximum, range, size, sum, mean, median, mode(s), standard deviation, variance, midrange, quartiles, interquartile range, outliers, sum of squares, mean absolute deviation, root mean square, standard error of the mean, skewness, kurtosis, and kurtosis excess.
+void Container::displayAllStatistics(ostream& out) const
+{
+    double q1 = 0.0;
+    double q2 = 0.0;
+    double q3 = 0.0;
+
+    calculateQuartiles(q1, q2, q3);
+
+    double interquartileRange = calculateInterquartileRange(q1, q3);
+
+    double skewness = calculateSkewness();
+    double kurtosis = calculateKurtosis();
+    double kurtosisExcess = calculateKurtosisExcess();
+
+    out << "\n";
+    out << fixed << setprecision(2);
+    out << "\t" << left << setw(28) << "Minimum" << "= " << data[0] << "\n";
+    out << "\t" << left << setw(28) << "Maximum" << "= " << data[size - 1] << "\n";
+    out << "\t" << left << setw(28) << "Range" << "= " << (data[size - 1] - data[0]) << "\n";
+    out << "\t" << left << setw(28) << "Size" << "= " << size << "\n";
+    out << "\t" << left << setw(28) << "Sum" << "= " << calculateSum() << "\n";
+    out << "\t" << left << setw(28) << "Mean" << "= " << calculateMean() << "\n";
+    out << "\t" << left << setw(28) << "Median" << "= " << calculateMedian() << "\n";
+    out << "\t" << left << setw(28) << "Mode(s)" << "= " << calculateMode() << "\n";
+    out << "\t" << left << setw(28) << "Standard Deviation" << "= " << calculateStandardDeviation() << "\n";
+    out << "\t" << left << setw(28) << "Variance" << "= " << calculateVariance() << "\n";
+    out << "\t" << left << setw(28) << "Midrange" << "= " << calculateMidrange() << "\n";
+
+    // QUARTILES
+    out << "\t" << left << setw(28) << "Quartiles" << "Quartiles:\n";
+
+    if (size < 4)
+    {
+        out << "\t" << setw(28) << "" << "Q1 --> unknown\n";
+        out << "\t" << setw(28) << "" << "Q2 --> " << q2 << "\n";
+        out << "\t" << setw(28) << "" << "Q3 --> unknown\n";
+    }
+    else
+    {
+        out << "\t" << setw(28) << "" << "Q1 --> " << q1 << "\n";
+        out << "\t" << setw(28) << "" << "Q2 --> " << q2 << "\n";
+        out << "\t" << setw(28) << "" << "Q3 --> " << q3 << "\n";
+    }
+    // INTERQUARTILE RANGE
+    out << "\t" << left << setw(28) << "Interquartile Range" << "= ";
+
+    if (size < 4)
+    {
+        out << "unknown\n";
+    }
+    else
+    {
+        out << interquartileRange << "\n";
+    }
+    // OUTLIERS
+    out << "\t" << left << setw(28) << "Outliers" << "= " << calculateOutliersString() << "\n";
+    out << "\t" << left << setw(28) << "Sum of Squares" << "= " << calculateSumOfSquares() << "\n";
+    out << "\t" << left << setw(28) << "Mean Absolute Deviation" << "= " << calculateMeanAbsoluteDeviation() << "\n";
+    out << "\t" << left << setw(28) << "Root Mean Square" << "= " << calculateRootMeanSquare() << "\n";
+    out << "\t" << left << setw(28) << "Standard Error of the Mean" << "= " << calculateStandardErrorOfMean() << "\n";
+    // SKEWNESS
+    out << "\t" << left << setw(28) << "Skewness" << "= ";
+    if (isnan(skewness))
+    {
+        out << "unknown\n";
+    }
+    else
+    {
+        out << skewness << "\n";
+    }
+    // KURTOSIS
+    out << "\t" << left << setw(28) << "Kurtosis" << "= ";
+    if (isnan(kurtosis))
+    {
+        out << "unknown\n";
+    }
+    else
+    {
+        out << kurtosis << "\n";
+    }
+    // KURTOSIS EXCESS
+    out << "\t" << left << setw(28) << "Kurtosis Excess" << "= ";
+    if (isnan(kurtosisExcess))
+    {
+        out << "unknown\n";
+    }
+    else
+    {
+        out << kurtosisExcess << "\n";
+    }
+    out << "\t" << left << setw(28) << "Coefficient of Variation" << "= " << calculateCoefficientOfVariation() << "\n";
+    out << "\t" << left << setw(28) << "Relative Standard Deviation" << "= " << calculateRelativeStandardDeviation() << "\n";
+    out << "\n";
+
+    displayFrequencyTable(out);
+}
+
+//OPTION Z
+// Precondition: filename contains the name of a text file.
+// Postcondition: All statistics of the dataset are written to the specified file.
+bool Container::outputAllStatisticsToFile(const string& filename) const
+{
+    ofstream outputFile(filename);
+
+    if (!outputFile)
+    {
+        return false;
+    }
+
+    displayAllStatistics(outputFile);
+    outputFile.close();
+
+    return true;
 }
