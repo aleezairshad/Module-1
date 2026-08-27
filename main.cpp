@@ -1,11 +1,14 @@
-//Thanh Phan
-//08-18-2026
-// Description: Module 1 - The Phases of Software Development 
+// Name: Hany, Aleeza, and Tuniphn
+// Date: 08-18-2026
+// Description: Modul1 - The Phases of Software Development
 
 #include <iostream>
 #include <string>
 #include <cctype>
 #include <iomanip>
+#include <ctime>
+#include <cstdlib>
+#include <sstream>
 #include "input.h"
 #include "Container.h"
 
@@ -18,22 +21,24 @@ char menuOption2();
 char menuOption3();
 
 
-
 int main()
 {
-    double q1 = 0;
-    double q2 = 0;
-    double q3 = 0;
-    double iqr = 0;
+    srand(time(0));
 
     Container dataset; // Create an instance of the Container class
-    cout << "\tModule 1 by Hany, Aleeza, and Thanh" << "\n\n";
+    srand(static_cast<unsigned int>(time(nullptr)));
+    cout << "\tModul 1 by Hany, Aleeza, and Tuniphn" << "\n\n";
     cout << "\tWhat are Descriptive Statistics?" << "\n\n";
     cout << "\tDescriptive statistics summarize certain aspects of a data set (Sample or Population)" << "\n";
     cout << "\tusing numeric calculations." << "\n\n";
     cout << "\thttps://www.calculatorsoup.com/calculators/statistics/descriptivestatistics.php." << "\n\n";
 
     system("pause");
+
+    double q1 = 0;
+    double q2 = 0;
+    double q3 = 0;
+    double iqr = 0;
 
     bool running = true;
     while (running)
@@ -119,7 +124,7 @@ int main()
                 {
                 case 'A':
                 {
-                    double value = inputDouble("\n\tSpecify an integer value to be inserted to the Dataset: ");
+                    double value = inputDouble("\n\tSpecify a value to be inserted to the Dataset: ");
 
                     dataset.insertValue(value); // Insert the specified value into the dataset
 
@@ -178,28 +183,31 @@ int main()
                 {
                 case 'A':
                 {
-                    double value = inputDouble("\n\tSpecify an integer value to find and be deleted from the Dataset: ");
+                    double value = inputDouble("\n\tSpecify a value to find and be deleted from the Dataset: ");
 
-                    char option = inputChar("\n\tDelete *-all elements or 1-one element found with value " + to_string(static_cast<int>(value)) + "? ", string("*1"));
+                    ostringstream valueText;
+                    valueText << fixed << setprecision(2) << value;
 
-                    bool deleted;
+                    char option = inputChar("\n\tDelete *-all elements or 1-one element found with value " + valueText.str() + "? ", string("*1"));
+
+                    int deletedCount;
                     // Call the deleteValue function with the appropriate parameters based on the user's choice
                     if (option == '*')
                     {
-                        deleted = dataset.deleteValue(value, true);
+                        deletedCount = dataset.deleteValue(value, true);
                     }
                     else
                     {
-                        deleted = dataset.deleteValue(value, false);
+                        deletedCount = dataset.deleteValue(value, false);
                     }
 
-                    if (!deleted)
+                    if (deletedCount == 0)
                     {
                         cout << "\n\tERROR: No element " << value << " has been found and deleted.\n\n";
                     }
                     else
                     {
-                        cout << "\n\tElement(s) successfully deleted.\n\n";
+                        cout << "\n\t" << deletedCount << " element(s) successfully deleted.\n\n";
                     }
 
                     system("pause");
@@ -210,7 +218,7 @@ int main()
                 {
                     int start = inputInteger("\n\tSpecify a starting integer value to be deleted from the Dataset: ");
 
-                    int end = inputInteger("\n\tSpecify an ending integer value to be deleted from the Dataset: ");
+                    int end = inputInteger("\n\tSpecify an ending integer value to be deleted from the Dataset: ", start, true);
 
                     bool deleted = dataset.deleteRange(start, end);  // Call the deleteRange function to delete values within the specified range
 
@@ -225,9 +233,9 @@ int main()
 
                 case 'C':
                 {
-                    dataset.deleteAll();
+                    int purgedCount = dataset.deleteAll();
 
-                    cout << "\n\tDataset has been purged of all elements.\n\n";
+                    cout << "\n\t" << purgedCount << " element(s) successfully deleted. Dataset has been purged of all elements.\n\n";
 
                     system("pause");
                     break;
@@ -247,36 +255,111 @@ int main()
 
 
         case 'A':
+        {
+            try
+            {
+                double minimum = dataset.calculateMinimum();
 
-            break;
+                cout << "\n\t" << left << setw(28) << "Minimum" << "= " << right << fixed << setprecision(2) << minimum << "\n\n\n";
+            }
+            catch (const char* message)
+            {
+                cout << message << "\n\n\n";
+            }
+
+            system("pause");
+        }
+
+        break;
         case 'B':
+        {
+            try
+            {
+                double maximum = dataset.calculateMaximum();
+                cout << "\n\t" << left << setw(28) << "Maximum" << "= " << right << fixed << setprecision(2) << maximum << "\n\n\n";
+            }
+            catch (const char* message)
+            {
+                cout << message << "\n\n\n";
+            }
+            system("pause");
+        }
 
-            break;
+        break;
         case 'C':
+        {
+            try
+            {
+                double range = dataset.calculateRange();
+                cout << "\n\t" << left << setw(28) << "Range" << "= " << right << fixed << setprecision(2) << range << "\n\n\n";
+            }
+            catch (const char* message)
+            {
+                cout << message << "\n\n\n";
+            }
+            system("pause");
+        }
 
-            break;
+        break;
         case 'D':
+        {
+            cout << "\n\t" << left << setw(28) << "Size" << "= " << right << dataset.getSize() << "\n\n\n";
+
+            system("pause");
+            break;
+        }
+
+        break;
+        case 'E':
+        {
+            double sumValue = dataset.calculateSum(); // Calculate the sum of the dataset
+            cout << "\n\tSum " << setw(25) << "= " << fixed << setprecision(2) << sumValue << "\n\n";
+            system("pause");
+        }
+
+        break;
+        case 'F':
+        {
+
+            double meanValue = dataset.calculateMean(); // Calculate the mean of the dataset
+
+            cout << "\n\tMean " << fixed << setprecision(2) << setw(25) << "= " << meanValue << "\n\n";
+            system("pause");
 
             break;
-        case 'E':
-            cout << "\tFind Sum" << "\n";
-            break;
-        case 'F':
-            cout << "\tFind Mean" << "\n";
-            break;
+        }
         case 'G':
+        {
+            double medianValue = dataset.calculateMedian(); // Calculate the median of the dataset
+            cout << "\n\tMedian " << fixed << setprecision(2) << setw(23) << "= " << medianValue << "\n\n";
+            system("pause");
+
             break;
+        }
         case 'H':
+        {
+            string modeValue = dataset.calculateMode(); // Calculate the mode of the dataset
+            cout << "\n\tMode " << setw(25) << "= " << modeValue << "\n\n";
+
+            system("pause");
+
             break;
+        }
         case 'I':
+        {
+            // Calculate the standard deviation of the dataset
+            cout << "\n\tStandard Deviation " << setw(12) << "= " << fixed << setprecision(2) << dataset.calculateStandardDeviation() << "\n\n";
+            system("pause");
+
             break;
+        }
         case 'J':
         {
             try
             {
                 double variance = dataset.calculateVariance();
 
-                cout << "\n\tVariance" << setw(30) << "= " << right << fixed << setprecision(7) << variance << "\n";
+                cout << "\n\tVariance" << setw(30) << "= " << right << fixed << setprecision(2) << variance << "\n\n";
             }
             catch (const char* message)
             {
@@ -284,15 +367,16 @@ int main()
             }
 
             system("pause");
-        }
+
             break;
+        }
         case 'K':
         {
             try
             {
                 double midrange = dataset.calculateMidrange();
-                
-                cout << "\n\tMidrange" << setw(30) << "= " << right << fixed << setprecision(7) << midrange << "\n";
+
+                cout << "\n\tMidrange" << setw(30) << "= " << right << fixed << setprecision(2) << midrange << "\n\n";
             }
             catch (const char* message)
             {
@@ -301,11 +385,13 @@ int main()
 
             system("pause");
         }
-            break;
+        break;
         case 'L':
         {
             dataset.calculateQuartiles(q1, q2, q3);
-            
+
+            cout << fixed << setprecision(2);
+
             if (dataset.getSize() <= 3)
             {
                 cout << "\n\tQuartiles" << setw(30) << right << "Quartiles:";
@@ -322,81 +408,167 @@ int main()
             }
 
             system("pause");
-        }
             break;
+        }
         case 'M':
         {
             if (dataset.getSize() < 4)
             {
-                cout << "\n\tInterquartile Range" << setw(30) << "= " << right << "unknown\n";
+                cout << "\n\tInterquartile Range" << setw(30) << "= " << right << "unknown\n\n";
             }
             else
             {
                 dataset.calculateQuartiles(q1, q2, q3); // prevent data change affect the calculation (so I recalculate)
 
                 iqr = dataset.calculateInterquartileRange(q1, q3);
-                cout << "\n\tInterquartile Range" << setw(30) << "= " << right << fixed << setprecision(7) << iqr << "\n";
-                system("pause");
+                cout << "\n\tInterquartile Range" << setw(30) << "= " << right << fixed << setprecision(2) << iqr << "\n\n";
             }
-        }
-            break;
-        case 'N':
-        {
-            dataset.calculateQuartiles(q1, q2, q3); // prevent data change affect the calculation (so I recalculate)
-            iqr = dataset.calculateInterquartileRange(q1, q3); // prevent data change affect the calculation (so I recalculate)
-            dataset.calculateOutliers(q1,q3,iqr);
             system("pause");
         }
-            break;
+        break;
+        case 'N':
+        {
+            string outliers = dataset.calculateOutliersString();
+            cout << "\n\tOutliers" << setw(30) << "= " << outliers << "\n\n";
+            system("pause");
+        }
+        break;
         case 'O':
         {
             double sumOfSquares = dataset.calculateSumOfSquares();
-            cout << "\n\tSum of Squares" << setw(30) << "= " << right << fixed << setprecision(7) << sumOfSquares << "\n";
+            cout << "\n\tSum of Squares" << setw(30) << "= " << right << fixed << setprecision(2) << sumOfSquares << "\n\n";
             system("pause");
         }
-            break;
+        break;
         case 'P':
         {
             double meanAbsDeviation = dataset.calculateMeanAbsoluteDeviation();
-            cout << "\n\tMean Absolute Deviation" << setw(30) << "= " << right << fixed << setprecision(7) << meanAbsDeviation << "\n";
+            cout << "\n\tMean Absolute Deviation" << setw(30) << "= " << right << fixed << setprecision(2) << meanAbsDeviation << "\n\n";
             system("pause");
         }
-            break;
+        break;
         case 'Q':
         {
             double rootMeanSquare = dataset.calculateRootMeanSquare();
-            cout << "\n\tRoot Mean Square" << setw(30) << "= " << right << fixed << setprecision(7) << rootMeanSquare << "\n";
+            cout << "\n\tRoot Mean Square" << setw(30) << "= " << right << fixed << setprecision(2) << rootMeanSquare << "\n\n";
             system("pause");
         }
-            break;
+        break;
         case 'R':
         {
             double stdErrorOfMean = dataset.calculateStandardErrorOfMean();
-            cout << "\n\tStandard Error of the Mean" << setw(30) << "= " << right << fixed << setprecision(7) << stdErrorOfMean << "\n";
+            cout << "\n\tStandard Error of the Mean" << setw(4) << "= " << right << fixed << setprecision(2) << stdErrorOfMean << "\n\n";
             system("pause");
         }
-            break;
+        break;
         case 'S':
+        {
+            double skewnessValue = dataset.calculateSkewness(); // Calculate the skewness of the dataset
+            cout << "\n\tSkewness " << setw(21) << "= ";
+            if (isnan(skewnessValue))
+            {
+                cout << "unknown\n\n";
+            }
+            else
+            {
+                cout << fixed << setprecision(2) << skewnessValue << "\n\n";
+            }
+
+            system("pause");
             break;
+        }
         case 'T':
+        {
+            double kurtosisValue = dataset.calculateKurtosis(); // Calculate the kurtosis of the dataset
+            cout << "\n\tKurtosis " << setw(22) << "= ";
+            if (isnan(kurtosisValue))
+            {
+                cout << "unknown\n\n";
+            }
+            else
+            {
+                cout << fixed << setprecision(2) << kurtosisValue << "\n\n";
+            }
+            system("pause");
             break;
+        }
         case 'U':
+        {
+            double kurtosisExcessValue = dataset.calculateKurtosisExcess(); // Calculate the kurtosis excess of the dataset
+            cout << "\n\tKurtosis Excess " << setw(15) << "= ";
+            if (isnan(kurtosisExcessValue))
+            {
+                cout << "unknown\n\n";
+            }
+            else
+            {
+                cout << fixed << setprecision(2) << kurtosisExcessValue << "\n\n";
+            }
+            system("pause");
             break;
+        }
         case 'V':
+        {
+            double coeffVariation = dataset.calculateCoefficientOfVariation(); // Calculate the coefficient of variation of the dataset
+            cout << "\n\tCoefficient of Variation " << setw(7) << "= ";
+            if (isnan(coeffVariation))
+            {
+                cout << "unknown\n\n";
+            }
+            else
+            {
+                cout << fixed << setprecision(2) << coeffVariation << "\n\n";
+            }
+            system("pause");
             break;
+        }
         case 'W':
-            break;
+        {
+            try
+            {
+                double relativeStandardDeviation = dataset.calculateRelativeStandardDeviation();
+
+                cout << "\n\t" << left << setw(28) << "Relative Standard Deviation" << "= " << right << fixed << setprecision(2) << relativeStandardDeviation << "\n\n\n";
+            }
+            catch (const char* message)
+            {
+                cout << message << "\n\n\n";
+            }
+
+            system("pause");
+        }
+        break;
+
         case 'X':
+            dataset.displayFrequencyTable(); // Display the frequency table of the dataset
+            system("pause");
             break;
+
         case 'Y':
+            dataset.displayAllStatistics(); // Display all statistics of the dataset
+            cout << "\n\n";
+            system("pause");
             break;
         case 'Z':
-            break;
+        {
+            string filename = inputString("\n\tSpecify a text file to save results: ", false);
+
+            if (dataset.outputAllStatisticsToFile(filename))
+            {
+                cout << "\n\tCONFIRMATION: File, " << filename << ", has been generated.\n\n\n";
+            }
+            else
+            {
+                cout << "\n\tERROR: File, " << filename << ", could not be generated.\n\n\n";
+            }
+
+            system("pause");
+        }
+        break;
         default:
             cout << "\tInvalid option. Please try again." << "\n";
         }
     }
-
 
     return EXIT_SUCCESS;
 }
@@ -488,3 +660,6 @@ char menuOption3()
     cout << "\t" << string(80, char(205)) << "\n";
     return inputChar("\n\tOption: ", string("ABCR"));
 }
+
+
+
