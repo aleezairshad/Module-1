@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 #include <string>
 
@@ -8,7 +7,7 @@ using namespace std;
 class Container
 {
 private:
-	double* data;
+	int* data;
 	int size;
 	bool isSample;
 public:
@@ -16,20 +15,20 @@ public:
 	~Container();
 	void setIsSample(bool sample);
 	bool getIsSample() const;
-	void insertValue(double value);
+	void insertValue(int value);
 	void insertRandomValues(int count);
 	//void deleteValue(double value);  // I changed this to return a bool to indicate whether the value was found and deleted
 	//void deleteRange(double start, double end); // I changed this to return a bool to indicate whether the value was found and deleted
 	int deleteAll();
 	int getSize() const;
-	double* getData() const;
+	int* getData() const;
 	//void readFromFile(const string& filename);  // I changed this to return an int to indicate the number of values read from the file
 	void display() const;
 	void sortData();
 
-	int deleteValue(double value, bool deleteAll = false);
+	int deleteValue(int value, bool deleteAll = false);
 
-	bool deleteRange(double start, double end);
+	bool deleteRange(int start, int end);
 
 	int readFromFile(const string& filename);
 
@@ -52,7 +51,6 @@ public:
 	double calculateMidrange() const; //option K
 	void calculateQuartiles(double& q1, double& q2, double& q3) const; //option L
 	double calculateInterquartileRange(double q1, double q3) const; //option M
-	void calculateOutliers(double q1, double q3, double interquartileRange) const; //option N
 	double calculateSumOfSquares() const; //option O
 	double calculateMeanAbsoluteDeviation() const; //option P
 	double calculateRootMeanSquare() const; //option Q
@@ -71,4 +69,7 @@ public:
 	void displayAllStatistics(ostream& out = cout) const; //option Z
 	bool outputAllStatisticsToFile(const string& filename) const; //option Z
 };
+
+
+
 
